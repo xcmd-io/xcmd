@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Splitter</title>
+		<style>
+			html {
+				font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+				font-size: small;
+			}
+
+			html, body {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				padding: 0;
+			}
+
+			div.container {
+				width: 50vw;
+				height: 50vh;
+				overflow: hidden;
+				border: 1px solid #000;
+			}
+		</style>
+		<link href="vsplit.css" rel="stylesheet"/>
+		<script src="vsplit.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="vsplit">
+				<div class="vsplit-pane">
+					<h1>Left</h1>
+				</div>
+				<div class="vsplit-handle"></div>
+				<div class="vsplit-pane">
+					<h1>Right2</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+					<h1>Right</h1>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script>
+new VSplit(document.querySelector('.vsplit'))
+	</script>
+</html>

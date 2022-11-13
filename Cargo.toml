@@ -1,0 +1,8 @@
+[workspace]
+members = [
+	"xcmd-tauri/src-tauri",
+	"xcmd-fs",
+	"xcmd-ssh",
+	"xcmd-s3",
+	"systemicons",
+]

@@ -1,0 +1,43 @@
+ul.tabs {
+	display: flex;
+	margin: 0;
+	padding: 0;
+	overflow-x: scroll;
+	width: 100%;
+}
+
+ul.tabs li {
+	cursor: default;
+	display: block;
+	min-width: 8em;
+	width: 8em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	margin: 0;
+	padding: 4px;
+	background: #eee;
+	border: 1px solid #eee;
+	border-right-color: #ddd;
+}
+
+ul.tabs li.selected {
+	background: #fff;
+	border-bottom-color: #fff;
+}
+
+ul.tabs::-webkit-scrollbar {
+	height: 3px;
+}
+
+ul.tabs::-webkit-scrollbar-track {
+	background: #fff;
+}
+
+ul.tabs::-webkit-scrollbar-thumb {
+	background: #aaa;
+}
+
+ul.tabs::-webkit-scrollbar-thumb:hover {
+	background: #777;
+}

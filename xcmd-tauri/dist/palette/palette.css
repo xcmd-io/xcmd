@@ -1,0 +1,105 @@
+.palette {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	/* height: 80%; */
+	width: 80%;
+	/* overflow: hidden; */
+	text-align: left;
+	border-spacing: 0;
+	white-space: nowrap;
+	table-layout: fixed;
+	border: 1px solid #ccc;
+	background: #eee;
+	box-sizing: border-box;
+	box-shadow: 0 0 6px #ccc;
+	padding: 3px;
+}
+
+.palette p {
+	margin: 0;
+	margin-bottom: 3px;
+	width: 100%;
+}
+
+.palette input {
+	box-sizing: border-box;
+	padding: 3px;
+	width: 100%;
+	border: 1px solid #ccc;
+}
+
+.palette input:focus {
+	outline: 0;
+	border: 1px solid #06b;
+}
+
+.vtable {
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+	text-align: left;
+	border-spacing: 0;
+	white-space: nowrap;
+	table-layout: fixed;
+	border: 1px solid #ccc;
+	background: #fff;
+}
+
+.vtable,
+.vtable thead,
+.vtable tbody,
+.vtable tr {
+	display: block;
+}
+
+.vtable thead {
+	box-sizing: border-box;
+	padding: 1px;
+	width: 100%;
+	overflow: scroll;
+	overflow-x: hidden;
+	scrollbar-color: #eee #eee;
+	background: #eee;
+	top: 0;
+}
+
+.vtable thead::-webkit-scrollbar {
+	visibility: hidden;
+}
+
+.vtable tr {
+	display: table;
+	table-layout: fixed;
+	width: 100%;
+}
+
+.vtable th,
+.vtable td {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	margin: 0;
+	padding: 0 1px;
+	font-weight: normal;
+	/* border: 1px solid red; */
+}
+
+.vtable tbody {
+	box-sizing: border-box;
+	outline: none;
+	padding: 1px;
+	/* height: calc(100% - 19px); */
+	height: 100%;
+	width: 100%;
+	overflow: scroll;
+	overflow-x: hidden;
+	position: relative;
+}
+
+.vtable tbody tr:focus {
+	outline: 1px #000 dotted;
+}
+
+.vtable--align-right {
+	text-align: right;
+}

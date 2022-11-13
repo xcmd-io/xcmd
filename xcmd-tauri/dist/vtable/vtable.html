@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" href="../floppy.svg" type="image/svg+xml">
+		<title>Cross Commander</title>
+		<style>
+html {
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	font-size: small;
+}
+
+div.container {
+	width: 50vw;
+	height: 50vh;
+	overflow: hidden;
+}
+
+.icon {
+	width: 16px;
+	height: 16px;
+	margin: 0 3px 0 1px;
+	display: inline-block;
+	vertical-align: bottom;
+}
+		</style>
+		<link href="vtable.css" rel="stylesheet"/>
+		<script src="vtable.js"></script>
+	</head>
+	<body>
+		<p>Paragraph</p>
+		<div class="container">
+			<table id="vtable" class="vtable">
+				<thead>
+					<tr>
+						<th style="width: 100%">Name</th>
+						<th style="width: 3em">Ext</th>
+						<th style="width: 5em">Size</th>
+						<th style="width: 10em">Date</th>
+						<th style="width: 5em">Attr</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr class="tbody-row" tabindex="0">
+						<td style="width: 100%"><img class="icon" src="../folder.svg"/> <span data-text="name">name</span></td>
+						<td style="width: 3em" style="width: 3em">ext</td>
+						<td style="width: 5em" class="vtable--align-right">0</td>
+						<td style="width: 10em">1970-01-01 00:00</td>
+						<td style="width: 5em">-a--</td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+	<script>
+const table = new VTable(document.querySelector('#vtable'));
+table.setDataSource(new RemoteDataSource(8080, { path: 'c:\\work' }))
+	</script>
+</html>
