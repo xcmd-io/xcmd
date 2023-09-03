@@ -1,0 +1,5 @@
+.*
+!.gitignore
+!.editorconfig
+target
+node_modules

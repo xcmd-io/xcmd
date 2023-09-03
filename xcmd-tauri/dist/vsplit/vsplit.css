@@ -1,0 +1,33 @@
+div.vsplit {
+	position: relative;
+	display: flex;
+	height: 100%;
+	width: 100%;
+}
+
+div.vsplit .vsplit-handle {
+	cursor: col-resize;
+	background: #ddd;
+	width: 3px;
+}
+
+div.vsplit .vsplit-handle:hover {
+	background: #aaa;
+}
+
+div.vsplit .vsplit-handle-preview {
+	position: absolute;
+	background: #777;
+	width: 3px;
+	height: 100%;
+	pointer-events: none;
+}
+
+body.vsplit-moving {
+	cursor: col-resize!important;
+}
+
+div.vsplit .vsplit-pane {
+	flex: 1;
+	overflow: hidden;
+}

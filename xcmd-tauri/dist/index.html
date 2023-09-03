@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" href="floppy.svg" type="image/svg+xml">
+		<title>Cross Commander</title>
+		<style>
+html {
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	font-size: small;
+}
+
+body {
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+	padding-top: 3px;
+	background: #eee;
+	box-sizing: border-box;
+}
+
+.icon {
+	width: 16px;
+	height: 16px;
+	display: inline-block;
+	vertical-align: bottom;
+}
+
+input {
+	font: inherit;
+}
+
+.tabs {
+	align-self: flex-start;
+	flex-shrink: 0;
+	flex-grow: 0;
+}
+
+.address {
+	box-sizing: border-box;
+	padding: 3px;
+	width: 100%;
+	border: 1px solid #eee;
+}
+.address:focus {
+	border: 1px solid #06b;
+	outline: none;
+}
+
+.vsplit-pane {
+	display: flex;
+	flex-direction: column;
+}
+		</style>
+		<link href="vtable/vtable.css" rel="stylesheet"/>
+		<link href="vsplit/vsplit.css" rel="stylesheet"/>
+		<link href="tabs/tabs.css" rel="stylesheet"/>
+		<script defer src="keyboard.js"></script>
+		<script defer src="vtable/vtable.js"></script>
+		<script defer src="vsplit/vsplit.js"></script>
+		<script defer src="tabs/tabs.js"></script>
+		<script defer src="palette/palette.js"></script>
+		<script defer src="pane.js"></script>
+	</head>
+	<body>
+		<div id="vsplit" class="vsplit">
+			<div class="vsplit-pane">
+				<ul class="tabs">
+					<li tabindex="0"><img class="icon" src="folder.svg"/> xcmd</li>
+				</ul>
+				<input class="address" value="C:\" autocomplete="off" spellcheck="false" aria-autocomplete="list"/>
+				<table class="vtable">
+					<thead>
+						<tr>
+							<th style="width: 100%">Name</th>
+							<th style="width: 3em">Ext</th>
+							<th style="width: 5em">Size</th>
+							<th style="width: 10em">Date</th>
+							<th style="width: 5em">Attr</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="tbody-row" tabindex="0">
+							<td style="width: 100%"><img class="icon" src="../folder.svg"/> <span data-text="name">name</span></td>
+							<td style="width: 3em" style="width: 3em">ext</td>
+							<td style="width: 5em" class="vtable--align-right">0</td>
+							<td style="width: 10em">1970-01-01 00:00</td>
+							<td style="width: 5em">-a--</td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="vsplit-handle"></div>
+		</div>
+	</body>
+	<script defer src="main.js"></script>
+</html>
