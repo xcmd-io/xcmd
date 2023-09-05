@@ -2,18 +2,19 @@ use actix_cors::Cors;
 use actix_web::{body::to_bytes, get, http, post, web, App, HttpResponse, HttpServer};
 use aws_sdk_s3::{model::EncodingType, Credentials, Region};
 use rust_embed::RustEmbed;
-use tracing::trace;
-use tracing_actix_web::TracingLogger;
 use std::{
 	borrow::{Borrow, Cow},
-	error::Error,
 	env,
+	error::Error,
 	iter::once,
 	ops::Deref,
 	path::Component,
 };
+use tracing::trace;
+use tracing_actix_web::TracingLogger;
 use xcmd_base::{
-	stop_server_when_parent_process_exits, FileInfo, ListRequest, ListResponse, Request, Response, init_telemetry,
+	init_telemetry, stop_server_when_parent_process_exits, FileInfo, ListRequest, ListResponse,
+	Request, Response,
 };
 
 #[post("/")]
@@ -53,8 +54,8 @@ async fn main() -> std::io::Result<()> {
 	let server = HttpServer::new(|| {
 		let cors = Cors::default()
 			.allowed_origin("null")
+			.allowed_origin("tauri://localhost")
 			.allowed_origin("https://tauri.localhost")
-			.allowed_origin("http://127.0.0.1:1430")
 			.allowed_methods(vec!["GET", "POST"])
 			.allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
 			.allowed_header(http::header::CONTENT_TYPE)
@@ -84,7 +85,9 @@ async fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>
 			env::var("AWS_SECRET_ACCESS_KEY").unwrap_or_default().trim(),
 			None,
 		))
-		.region(Region::new(env::var("AWS_DEFAULT_REGION").unwrap_or_default()))
+		.region(Region::new(
+			env::var("AWS_DEFAULT_REGION").unwrap_or_default(),
+		))
 		.load()
 		.await;
 
@@ -142,7 +145,11 @@ async fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>
 		}
 	}
 
-	let active_key = if let Some(name) = active_name { Some(format!("{}/", name)) } else { None };
+	let active_key = if let Some(name) = active_name {
+		Some(format!("{}/", name))
+	} else {
+		None
+	};
 	trace!("active_key = {:?}", active_key);
 
 	// the path has form of {bucket_name}/{prefix1}/{prefix2}/{object_name}

@@ -55,7 +55,12 @@ async fn main() -> std::io::Result<()> {
 	session.set_tcp_stream(tcp);
 	session.handshake()?;
 
-	session.userauth_password(&env::var("SSH_USER").unwrap_or_default(), &env::var("SSH_PASSWORD").unwrap_or_default()).unwrap();
+	session
+		.userauth_password(
+			&env::var("SSH_USER").unwrap_or_default(),
+			&env::var("SSH_PASSWORD").unwrap_or_default(),
+		)
+		.unwrap();
 	assert!(session.authenticated());
 
 	// let sftp_ref = OwningHandle::new_with_fn(
@@ -68,8 +73,8 @@ async fn main() -> std::io::Result<()> {
 	let server = HttpServer::new(move || {
 		let cors = Cors::default()
 			.allowed_origin("null")
+			.allowed_origin("tauri://localhost")
 			.allowed_origin("https://tauri.localhost")
-			.allowed_origin("http://127.0.0.1:1430")
 			.allowed_methods(vec!["GET", "POST"])
 			.allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
 			.allowed_header(http::header::CONTENT_TYPE)

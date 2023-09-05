@@ -4,3 +4,4 @@
 !.github
 target
 node_modules
+xcmd-tauri/src-tauri/binaries
