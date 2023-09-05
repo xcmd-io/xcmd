@@ -8,8 +8,11 @@ new Pane(leftPane, 8080);
 new Pane(rightPane, 8080);
 
 if (!sessionStorage.getItem('initialized')) {
-	const invoke = window.__TAURI__.invoke;
-	invoke('spawn_process', { process: 'xcmd-fs', arguments: [] }); // port 8080
+	const { shell } = window.__TAURI__;
+	shell.Command.sidecar('binaries/xcmd-fs', []).execute();
+
+	// const invoke = window.__TAURI__.invoke;
+	// invoke('spawn_process', { process: 'xcmd-fs', arguments: [] }); // port 8080
 	// invoke('spawn_process', { process: 'xcmd-ssh', arguments: [] }); // port 8081
 	// invoke('spawn_process', { process: 'xcmd-s3', arguments: [] }); // port 8082
 	sessionStorage.setItem('initialized', '1');

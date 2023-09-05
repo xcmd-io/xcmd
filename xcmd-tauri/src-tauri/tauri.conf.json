@@ -9,13 +9,20 @@
 	},
 	"package": {
 		"productName": "xcmd",
-		"version": "0.1.0"
+		"version": "0.1.4"
 	},
 	"tauri": {
 		"allowlist": {
 			"all": true,
 			"shell": {
 				"sidecar": true,
+				"scope": [
+					{
+						"name": "binaries/xcmd-fs",
+						"sidecar": true,
+						"args": []
+					}
+				],
 				"execute": true
 			}
 		},
@@ -26,7 +33,9 @@
 			"deb": {
 				"depends": []
 			},
-			"externalBin": [],
+			"externalBin": [
+				"binaries/xcmd-fs"
+			],
 			"icon": [
 				"icons/32x32.png",
 				"icons/128x128.png",
@@ -56,7 +65,12 @@
 			"csp": null
 		},
 		"updater": {
-			"active": false
+			"active": true,
+			"endpoints": [
+				"https://github.com/xcmd-io/xcmd/releases/download/test/latest.json"
+			],
+			"dialog": true,
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZDQkZDREVGRkVBQ0RBRDMKUldUVDJxeis3ODIvL0pHRHZkQTlONVpXZzRXNjhGWTdybkZtWFJzdEtHK1NRaVJIaEZuaHVIM3gK"
 		},
 		"windows": [
 			{

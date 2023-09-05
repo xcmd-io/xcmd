@@ -3,14 +3,20 @@ use actix_web::body::to_bytes;
 use actix_web::{get, http, post, web, App, HttpResponse, HttpServer};
 use rust_embed::RustEmbed;
 use serde::Deserialize;
+use std::error::Error;
+use std::fs;
 use tracing::trace;
 use tracing_actix_web::TracingLogger;
 use urlencoding::encode;
-use std::error::Error;
-use std::fs;
 use xcmd_base::{
-	stop_server_when_parent_process_exits, FileInfo, ListRequest, ListResponse, Request, Response, init_telemetry,
+	init_telemetry, stop_server_when_parent_process_exits, FileInfo, ListRequest, ListResponse,
+	Request, Response,
 };
+
+#[cfg(target_os = "windows")]
+const DEFAULT_PATH: &str = "c:/";
+#[cfg(not(target_os = "windows"))]
+const DEFAULT_PATH: &str = "/";
 
 #[post("/")]
 async fn enact(request: web::Json<Request>) -> Result<HttpResponse, Box<dyn Error>> {
@@ -34,9 +40,13 @@ struct IconQuery {
 }
 
 #[get("/icons/{name}")]
-async fn icon(name: web::Path<String>, query: web::Query<IconQuery>) -> Result<HttpResponse, Box<dyn Error>> {
+async fn icon(
+	name: web::Path<String>,
+	query: web::Query<IconQuery>,
+) -> Result<HttpResponse, Box<dyn Error>> {
 	if let Some(path) = &query.path {
-		let bytes = systemicons::get_icon(&path, 16, name.to_string() == "folder").map_err(|err| err.message)?;
+		let bytes = systemicons::get_icon(&path, 16, name.to_string() == "folder")
+			.map_err(|err| err.message)?;
 		return Ok(HttpResponse::Ok()
 			.content_type("image/png")
 			.append_header(("Cache-Control", "public, max-age=86400"))
@@ -61,8 +71,8 @@ async fn main() -> std::io::Result<()> {
 	let server = HttpServer::new(|| {
 		let cors = Cors::default()
 			.allowed_origin("null")
+			.allowed_origin("tauri://localhost")
 			.allowed_origin("https://tauri.localhost")
-			.allowed_origin("http://127.0.0.1:1430")
 			.allowed_methods(vec!["GET", "POST"])
 			.allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
 			.allowed_header(http::header::CONTENT_TYPE)
@@ -92,7 +102,7 @@ fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>> {
 	let path = if let Some(ref path) = request.path {
 		std::path::Path::new(path).to_path_buf()
 	} else {
-		std::path::Path::new("c:/").to_path_buf()
+		std::path::Path::new(DEFAULT_PATH).to_path_buf()
 	};
 
 	// gets the full path; this path concatenated with the optional key, for instance `a/b/c/d`
@@ -112,26 +122,21 @@ fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>> {
 	}
 
 	// active name is 'c' for case when {path: 'a/b/c', key: '..'}
-	let active_name =
-		if let Some(ref key) = request.key {
-			if key == "../" {
-				path.file_name().map(|x| x.to_string_lossy().to_string())
-			} else {
-				None
-			}
+	let active_name = if let Some(ref key) = request.key {
+		if key == "../" {
+			path.file_name().map(|x| x.to_string_lossy().to_string())
 		} else {
 			None
-		};
+		}
+	} else {
+		None
+	};
 
 	// appends the files in the full_path directory
 	if let Ok(read_dir) = fs::read_dir(&full_path) {
 		for child_path in read_dir {
 			match child_path {
-				Ok(dir_entry) => files.push(get_local_file(
-					&dir_entry.path(),
-					None,
-					&active_name,
-				)),
+				Ok(dir_entry) => files.push(get_local_file(&dir_entry.path(), None, &active_name)),
 				Err(err) => eprintln!("Error: {}", err),
 			}
 		}
@@ -182,9 +187,11 @@ fn get_local_file(
 	FileInfo {
 		key: format!("{}{}", name, if is_dir { "/" } else { "" }),
 		is_directory: is_dir,
-		icon: format!("{}?path={}",
+		icon: format!(
+			"{}?path={}",
 			if is_dir { "folder" } else { "file" },
-			encode(path.to_string_lossy().into_owned().as_str())),
+			encode(path.to_string_lossy().into_owned().as_str())
+		),
 		icon_type: "file".to_string(),
 		name: name.clone(),
 		extension,

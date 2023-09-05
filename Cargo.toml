@@ -1,8 +1,10 @@
 [workspace]
 members = [
-	"xcmd-tauri/src-tauri",
+	"xcmd-base",
 	"xcmd-fs",
 	"xcmd-ssh",
 	"xcmd-s3",
+	"xcmd-tauri/src-tauri",
 	"systemicons",
 ]
+resolver = "2"
