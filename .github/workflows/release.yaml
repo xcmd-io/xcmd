@@ -2,7 +2,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+    - 'v*'
   workflow_dispatch:
 
 jobs:
@@ -16,46 +16,46 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-20.04'
-        # You can remove libayatana-appindicator3-dev if you don't use the system tray feature.
-        run: |
-          sudo apt-get update --fix-missing
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
+    - name: Install dependencies (ubuntu only)
+      if: matrix.platform == 'ubuntu-20.04'
+      # You can remove libayatana-appindicator3-dev if you don't use the system tray feature.
+      run: |
+        sudo apt-get update --fix-missing
+        sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
 
-      - name: Rust setup
-        uses: dtolnay/rust-toolchain@stable
+    - name: Rust setup
+      uses: dtolnay/rust-toolchain@stable
 
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
+    - name: Rust cache
+      uses: swatinem/rust-cache@v2
 
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v3
-        with:
-          node-version: 'lts/*'
-          cache: npm
-          cache-dependency-path: '**/package-lock.json'
+    - name: Sync node version and setup cache
+      uses: actions/setup-node@v3
+      with:
+        node-version: 'lts/*'
+        cache: npm
+        cache-dependency-path: '**/package-lock.json'
 
-      - name: Build binaries
-        run: cargo build --release --package xcmd-fs --package xcmd-ssh --package xcmd-s3 && cargo test --release --package xcmd-fs --package xcmd-ssh xcmd-s3
+    - name: Build binaries
+      run: cargo build --release --package xcmd-fs --package xcmd-ssh --package xcmd-s3 && cargo test --release --package xcmd-fs --package xcmd-ssh xcmd-s3
 
-      - name: Install frontend dependencies
-        working-directory: xcmd-tauri
-        run: npm install
+    - name: Install frontend dependencies
+      working-directory: xcmd-tauri
+      run: npm install
 
-      - name: Build the app
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-        with:
-          tagName: test # ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
-          projectPath: xcmd-tauri
-          releaseName: 'Cross Commander v__VERSION__'
-          releaseBody: 'See the assets to download and install this version.'
-          releaseDraft: true
-          prerelease: false
+    - name: Build the app
+      uses: tauri-apps/tauri-action@v0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+        TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+      with:
+        tagName: test # ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
+        projectPath: xcmd-tauri
+        releaseName: 'Cross Commander v__VERSION__'
+        releaseBody: 'See the assets to download and install this version.'
+        releaseDraft: true
+        prerelease: false
