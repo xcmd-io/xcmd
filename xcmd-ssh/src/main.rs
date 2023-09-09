@@ -162,11 +162,8 @@ fn get_local_file(
 	Ok(FileInfo {
 		key: format!("{}{}", name, if is_dir { "/" } else { "" }),
 		is_directory: is_dir,
-		icon: if is_dir {
-			"folder".to_string()
-		} else {
-			"file".to_string()
-		}, // full_path,
+		icon: (if is_dir { "folder" } else { "file" }).to_string(), // full_path,
+		icon_alt: None,
 		icon_type: "file".to_string(),
 		name,
 		extension,

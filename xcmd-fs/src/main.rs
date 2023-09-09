@@ -192,6 +192,7 @@ fn get_local_file(
 			if is_dir { "folder" } else { "file" },
 			encode(path.to_string_lossy().into_owned().as_str())
 		),
+		icon_alt: Some((if is_dir { "folder" } else { "file" }).to_string()),
 		icon_type: "file".to_string(),
 		name: name.clone(),
 		extension,

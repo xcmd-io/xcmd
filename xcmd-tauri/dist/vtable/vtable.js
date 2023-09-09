@@ -254,10 +254,17 @@ class VTable {
 		this.tBody.dataset.range = range.toString();
 
 		const fns = {
-			icon: (item) => {
-				return this.dataSource.port
-					? `http://localhost:${this.dataSource.port}/icons/${item.icon}`
-					: (item.isDirectory ? 'folder.svg' : 'file.svg');
+			icon: (item, slot) => {
+				if (!this.dataSource.port) {
+					return item.isDirectory ? 'folder.svg' : 'file.svg';
+				}
+				if (item.iconAlt) {
+					const image = slot.cloneNode();
+					image.src = `http://localhost:${this.dataSource.port}/icons/${item.icon}`;
+					image.onload = function() { slot.parentNode.replaceChild(image, slot); };
+					return `http://localhost:${this.dataSource.port}/icons/${item.iconAlt}`;
+				}
+				return `http://localhost:${this.dataSource.port}/icons/${item.icon}`;
 			},
 			match: (item) => {
 				const text = item.name;
@@ -297,13 +304,13 @@ class VTable {
 				slot.src = item[slot.dataset.src];
 			}
 			for (const slot of tBodyRow.querySelectorAll('*[data-text-fn]')) {
-				slot.textContent = fns[slot.dataset.textFn](item);
+				slot.textContent = fns[slot.dataset.textFn](item, slot);
 			}
 			for (const slot of tBodyRow.querySelectorAll('*[data-html-fn]')) {
-				slot.innerHTML = fns[slot.dataset.htmlFn](item);
+				slot.innerHTML = fns[slot.dataset.htmlFn](item, slot);
 			}
 			for (const slot of tBodyRow.querySelectorAll('*[data-src-fn]')) {
-				slot.src = fns[slot.dataset.srcFn](item);
+				slot.src = fns[slot.dataset.srcFn](item, slot);
 			}
 			newTBody.appendChild(tBodyRow);
 		}

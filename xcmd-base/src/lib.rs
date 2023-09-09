@@ -114,6 +114,9 @@ pub struct FileInfo {
 	/// String identifying an icon. The value depends on icon type.
 	pub icon: String,
 
+	/// String identifying an alternative icon.
+	pub icon_alt: Option<String>,
+
 	/// "file" to use file at specified path to get an icon from operating system; "shell" to use just a path
 	pub icon_type: String,
 
