@@ -53,9 +53,9 @@ jobs:
         TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
         TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
       with:
-        tagName: test # ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
+        tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
         projectPath: xcmd-tauri
         releaseName: 'Cross Commander v__VERSION__'
-        releaseBody: 'See the assets to download and install this version.'
+        releaseBody: ${{ github.event.head_commit.message }}
         releaseDraft: true
         prerelease: false
