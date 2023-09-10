@@ -20,6 +20,8 @@ body {
 	padding-top: 3px;
 	background: #eee;
 	box-sizing: border-box;
+	cursor: default;
+	user-select: none;
 }
 
 .icon {
@@ -31,6 +33,7 @@ body {
 
 input {
 	font: inherit;
+	cursor: text;
 }
 
 .tabs {
@@ -84,7 +87,7 @@ input {
 					</thead>
 					<tbody>
 						<tr class="tbody-row" tabindex="0">
-							<td style="width: 100%"><img class="icon" data-src-fn="icon" src="../folder.svg"/> <span data-text="name">name</span></td>
+							<td style="width: 100%"><img class="icon" data-src-fn="icon" src="file.svg"/> <span data-text="name">name</span></td>
 							<td style="width: 3em" data-text="extension" style="width: 3em">ext</td>
 							<td style="width: 5em" data-text="size" class="vtable--align-right">0</td>
 							<td style="width: 10em">1970-01-01 00:00</td>

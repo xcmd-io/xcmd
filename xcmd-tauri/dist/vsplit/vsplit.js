@@ -55,7 +55,6 @@ class VSplit {
 		});
 
 		splitterHandle.addEventListener('dblclick', function(event) {
-			console.log('double click');
 			const handle = event.target;
 			const splitter = handle.parentElement;
 			splitter.firstElementChild.style.flex = '1';

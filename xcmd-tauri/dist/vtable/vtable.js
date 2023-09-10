@@ -184,6 +184,13 @@ class VTable {
 			}
 		});
 
+		this.tBody.addEventListener('dblclick', (evt) => {
+			const target = evt.target;
+			if (this.tBody.contains(target.parentElement)) {
+				return this.onDoubleClick(evt);
+			}
+		});
+
 		addEventListener('resize', () => {
 			this.populate();
 		});
@@ -222,6 +229,10 @@ class VTable {
 
 	onKeyDown(evt) {
 		console.log('keyCode', evt.keyCode);
+	}
+
+	onDoubleClick(evt) {
+		console.log('doubleClick');
 	}
 
 	async setDataSource(dataSource) {

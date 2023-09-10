@@ -36,6 +36,10 @@ class Pane {
 					console.log('keyCode', evt.keyCode);
 			}
 		};
+
+		this.table.onDoubleClick = (evt) => {
+			this.enterDirectory();
+		};
 	}
 
 	async setDataSource(dataSource) {
