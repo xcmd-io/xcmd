@@ -9,7 +9,7 @@
 	},
 	"package": {
 		"productName": "xcmd",
-		"version": "0.1.6"
+		"version": "0.1.7"
 	},
 	"tauri": {
 		"allowlist": {
@@ -67,7 +67,7 @@
 		"updater": {
 			"active": true,
 			"endpoints": [
-				"https://github.com/xcmd-io/xcmd/releases/download/test/latest.json"
+				"https://github.com/xcmd-io/xcmd/releases/latest/download/latest.json"
 			],
 			"dialog": true,
 			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZDQkZDREVGRkVBQ0RBRDMKUldUVDJxeis3ODIvL0pHRHZkQTlONVpXZzRXNjhGWTdybkZtWFJzdEtHK1NRaVJIaEZuaHVIM3gK"
