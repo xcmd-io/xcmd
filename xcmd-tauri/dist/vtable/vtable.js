@@ -153,6 +153,8 @@ class Range {
 	}
 }
 
+const iconCache = new Map();
+
 class VTable {
 	tBody;
 	tBodyRowTemplate;
@@ -254,7 +256,6 @@ class VTable {
 			return;
 		}
 		const { scrollTop, offsetHeight } = this.tBody;
-		console.log(offsetHeight);
 		const newTBody = document.createElement('tbody');
 		const start = Math.floor(scrollTop / this.rowHeight);
 		const end = Math.min(length, Math.ceil((scrollTop + offsetHeight) / this.rowHeight));
@@ -269,13 +270,29 @@ class VTable {
 				if (!this.dataSource.port) {
 					return item.isDirectory ? 'folder.svg' : 'file.svg';
 				}
+				const iconUrl = `http://localhost:${this.dataSource.port}/icons/${item.icon}`;
 				if (item.iconAlt) {
+					const cachedIcon = iconCache.get(iconUrl);
+					if (cachedIcon) {
+						slot.parentNode.replaceChild(cachedIcon.cloneNode(), slot);
+						return iconUrl;
+					}
+					const altIconUrl = `http://localhost:${this.dataSource.port}/icons/${item.iconAlt}`;
 					const image = slot.cloneNode();
-					image.src = `http://localhost:${this.dataSource.port}/icons/${item.icon}`;
-					image.onload = function() { slot.parentNode.replaceChild(image, slot); };
-					return `http://localhost:${this.dataSource.port}/icons/${item.iconAlt}`;
+					image.src = iconUrl;
+					image.onload = function() {
+						slot.parentNode.replaceChild(image, slot);
+						iconCache.set(iconUrl, image);
+						if (iconCache.size > 5_000) {
+							for (const [key, _value] of iconCache) {
+								iconCache.delete(key);
+								break;
+							}
+						}
+					};
+					return altIconUrl;
 				}
-				return `http://localhost:${this.dataSource.port}/icons/${item.icon}`;
+				return iconUrl;
 			},
 			match: (item) => {
 				const text = item.name;
@@ -351,7 +368,10 @@ class VTable {
 		} else if (this.tBody.scrollTop < row.offsetTop + row.offsetHeight - this.tBody.offsetHeight + 1) {
 			this.tBody.scrollTop = row.offsetTop + row.offsetHeight - this.tBody.offsetHeight + 1;
 		}
-		row.focus({ preventScroll: true });
+		const focused = document.activeElement === this.tBody || document.activeElement.parentElement === this.tBody;
+		if (focused) {
+			row.focus({ preventScroll: true });
+		}
 		this.activeIndex = this.getRowIndex(row);
 		return true;
 	}

@@ -3,6 +3,7 @@ div.vsplit {
 	display: flex;
 	height: 100%;
 	width: 100%;
+	background: #eee;
 }
 
 div.vsplit .vsplit-handle {

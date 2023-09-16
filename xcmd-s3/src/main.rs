@@ -56,6 +56,7 @@ async fn main() -> std::io::Result<()> {
 			.allowed_origin("null")
 			.allowed_origin("tauri://localhost")
 			.allowed_origin("https://tauri.localhost")
+			.allowed_origin("http://tauri.localhost")
 			.allowed_methods(vec!["GET", "POST"])
 			.allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
 			.allowed_header(http::header::CONTENT_TYPE)

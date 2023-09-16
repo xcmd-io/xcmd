@@ -2,6 +2,8 @@
 	position: absolute;
 	display: flex;
 	flex-direction: column;
+	top: 10%;
+	left: 10%;
 	/* height: 80%; */
 	width: 80%;
 	/* overflow: hidden; */
@@ -34,7 +36,7 @@
 	border: 1px solid #06b;
 }
 
-.vtable {
+.palette .vtable {
 	height: 100%;
 	width: 100%;
 	overflow: hidden;
@@ -46,14 +48,14 @@
 	background: #fff;
 }
 
-.vtable,
-.vtable thead,
-.vtable tbody,
-.vtable tr {
+.palette .vtable,
+.palette .vtable thead,
+.palette .vtable tbody,
+.palette .vtable tr {
 	display: block;
 }
 
-.vtable thead {
+.palette .vtable thead {
 	box-sizing: border-box;
 	padding: 1px;
 	width: 100%;
@@ -64,18 +66,18 @@
 	top: 0;
 }
 
-.vtable thead::-webkit-scrollbar {
+.palette .vtable thead::-webkit-scrollbar {
 	visibility: hidden;
 }
 
-.vtable tr {
+.palette .vtable tr {
 	display: table;
 	table-layout: fixed;
 	width: 100%;
 }
 
-.vtable th,
-.vtable td {
+.palette .vtable th,
+.palette .vtable td {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	margin: 0;
@@ -84,7 +86,7 @@
 	/* border: 1px solid red; */
 }
 
-.vtable tbody {
+.palette .vtable tbody {
 	box-sizing: border-box;
 	outline: none;
 	padding: 1px;
@@ -96,10 +98,10 @@
 	position: relative;
 }
 
-.vtable tbody tr:focus {
+.palette .vtable tbody tr:focus {
 	outline: 1px #000 dotted;
 }
 
-.vtable--align-right {
+.palette .vtable--align-right {
 	text-align: right;
 }

@@ -24,6 +24,16 @@ body {
 	user-select: none;
 }
 
+body > *[inert] {
+	pointer-events: none;
+	visibility: hidden;
+}
+
+body > *[inert]:first-child {
+	visibility: visible;
+	filter: brightness(85%);
+}
+
 .icon {
 	width: 16px;
 	height: 16px;
@@ -61,6 +71,7 @@ input {
 		<link href="vtable/vtable.css" rel="stylesheet"/>
 		<link href="vsplit/vsplit.css" rel="stylesheet"/>
 		<link href="tabs/tabs.css" rel="stylesheet"/>
+		<link href="palette/palette.css" rel="stylesheet"/>
 		<script defer src="keyboard.js"></script>
 		<script defer src="vtable/vtable.js"></script>
 		<script defer src="vsplit/vsplit.js"></script>
@@ -78,16 +89,17 @@ input {
 				<table class="vtable">
 					<thead>
 						<tr>
-							<th style="width: 100%">Name</th>
+							<th style="width: 20em">Name</th>
 							<th style="width: 3em">Ext</th>
 							<th style="width: 5em">Size</th>
 							<th style="width: 10em">Date</th>
 							<th style="width: 5em">Attr</th>
+							<th></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr class="tbody-row" tabindex="0">
-							<td style="width: 100%"><img class="icon" data-src-fn="icon" src="file.svg"/> <span data-text="name">name</span></td>
+							<td style="width: 20em"><img class="icon" data-src-fn="icon" src="file.svg"/> <span data-text="name">name</span></td>
 							<td style="width: 3em" data-text="extension" style="width: 3em">ext</td>
 							<td style="width: 5em" data-text="size" class="vtable--align-right">0</td>
 							<td style="width: 10em">1970-01-01 00:00</td>
@@ -98,6 +110,17 @@ input {
 				</table>
 			</div>
 			<div class="vsplit-handle"></div>
+		</div>
+		<div id="palette" class="palette" inert>
+			<p><input autocomplete="off" spellcheck="false" aria-autocomplete="list" /></p>
+			<table class="vtable">
+				<tbody>
+					<tr class="tbody-row" tabindex="0">
+						<td style="width: 100%"><img class="icon" src="../folder.svg" /> <span
+								data-html-fn="match"><b>File:</b> Help</span></td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</body>
 	<script defer src="main.js"></script>

@@ -95,6 +95,58 @@ class Palette {
 		this.input.oninput = () => {
 			this.updateDataSource(this.input.value);
 		};
+
+		this.element.parentElement.addEventListener('keydown', e => {
+			switch (getKey(e)) {
+				case Mod.Ctrl | Code.KeyP:
+					e.preventDefault();
+					this.show('');
+					return false;
+
+				case Mod.Ctrl | Mod.Shift | Code.KeyP:
+					e.preventDefault();
+					this.show('>');
+					return false;
+			}
+		});
+
+		this.element.onkeydown = e => {
+			switch (getKey(e)) {
+				case Code.Escape:
+					e.preventDefault();
+					this.hide();
+					return false;
+			}
+		};
+
+		this.input.onkeydown = e => {
+			switch (getKey(e)) {
+				case Code.Enter:
+				case Code.PageUp:
+				case Code.PageDown:
+				case Code.UpArrow:
+				case Code.DownArrow:
+					this.table.tBody.parentElement.onkeydown(e);
+					e.preventDefault();
+					this.input.focus();
+					return false;
+			}
+		};
+	}
+
+	show(value) {
+		for (const element of this.element.parentElement.children) {
+			element.inert = element !== this.element;
+		}
+		this.input.value = value;
+		this.updateDataSource(this.input.value);
+		this.input.focus();
+	}
+
+	hide() {
+		for (const element of this.element.parentElement.children) {
+			element.inert = element !== element.parentElement.children[0];
+		}
 	}
 
 	updateDataSource(value) {
