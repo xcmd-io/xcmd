@@ -78,6 +78,7 @@
 				"height": 600,
 				"resizable": true,
 				"title": "Cross Commander",
+				"visible": false,
 				"width": 800
 			}
 		]
