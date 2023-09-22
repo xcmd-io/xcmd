@@ -280,7 +280,7 @@ class VTable {
 					const altIconUrl = `http://localhost:${this.dataSource.port}/icons/${item.iconAlt}`;
 					const image = slot.cloneNode();
 					image.src = iconUrl;
-					image.onload = function() {
+					image.onload = function () {
 						slot.parentNode.replaceChild(image, slot);
 						iconCache.set(iconUrl, image);
 						if (iconCache.size > 5_000) {
@@ -293,6 +293,13 @@ class VTable {
 					return altIconUrl;
 				}
 				return iconUrl;
+			},
+			date: (item) => {
+				const date = new Date(item.date);
+				if (isNaN(date)) {
+					return '-';
+				}
+				return `${String(date.getFullYear()).padStart(4, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 			},
 			match: (item) => {
 				const text = item.name;

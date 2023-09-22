@@ -130,7 +130,7 @@ pub struct FileInfo {
 	pub size: u64,
 
 	/// File date.
-	pub date: u32,
+	pub date: u128,
 
 	/// Attributes.
 	pub attributes: u32,

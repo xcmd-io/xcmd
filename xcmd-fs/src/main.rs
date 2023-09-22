@@ -5,6 +5,7 @@ use rust_embed::RustEmbed;
 use serde::Deserialize;
 use std::error::Error;
 use std::fs;
+use std::time::{UNIX_EPOCH};
 use tracing::trace;
 use tracing_actix_web::TracingLogger;
 use urlencoding::encode;
@@ -161,10 +162,15 @@ fn get_local_file(
 	let metadata = path.metadata();
 	let mut size = 0;
 	let mut is_dir = false;
+	let mut date = 0;
 	if let Ok(metadata) = metadata {
 		size = metadata.len();
 		is_dir = metadata.file_type().is_dir();
-		// metadata.modified()?;
+		date = metadata
+			.modified()
+			.map(|t| t.duration_since(UNIX_EPOCH).unwrap_or_default())
+			.unwrap_or_default()
+			.as_millis();
 		// metadata.permissions();
 	};
 	let (name, extension) = if let Some(name) = name {
@@ -198,7 +204,7 @@ fn get_local_file(
 		name: name.clone(),
 		extension,
 		size,
-		date: 0,
+		date,
 		attributes: 0,
 		is_active: if let Some(active_name) = &active_name {
 			is_dir && active_name == &name
