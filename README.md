@@ -9,3 +9,18 @@ To start in development mode:
 ~~~shell
 npm --prefix xcmd-tauri run tauri dev
 ~~~
+
+## Releasing
+
+Update version in `tauri.conf.json` under `.package.version`:
+
+~~~text
+"version": "0.1.8"
+~~~
+
+To release a new version:
+
+~~~shell
+git tag v0.1.8 -m "Release message"
+git push origin v0.1.8
+~~~
