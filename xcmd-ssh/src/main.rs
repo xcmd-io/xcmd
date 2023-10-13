@@ -63,11 +63,6 @@ async fn main() -> std::io::Result<()> {
 		.unwrap();
 	assert!(session.authenticated());
 
-	// let sftp_ref = OwningHandle::new_with_fn(
-	// 	Box::new(session.clone()),
-	// 	unsafe { |x| Box::new((*x).sftp().unwrap()) }
-	// );
-
 	let sftp = Arc::new(session.sftp()?);
 
 	let server = HttpServer::new(move || {

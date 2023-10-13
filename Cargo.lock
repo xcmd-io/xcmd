@@ -3559,15 +3559,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "owning_ref"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6ff55baddef9e4ad00f88b6c743a2a8062d4c6ade126c2a528644b8e444d52ce"
-dependencies = [
- "stable_deref_trait",
-]
-
-[[package]]
 name = "pango"
 version = "0.15.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6769,7 +6760,6 @@ dependencies = [
  "actix-web",
  "env_logger",
  "log",
- "owning_ref",
  "rust-embed",
  "rustls 0.21.7",
  "serde",
