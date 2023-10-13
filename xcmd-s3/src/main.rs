@@ -1,6 +1,7 @@
 use actix_cors::Cors;
 use actix_web::{body::to_bytes, get, http, post, web, App, HttpResponse, HttpServer};
-use aws_sdk_s3::{model::EncodingType, Credentials, Region};
+use aws_sdk_s3::{config::Credentials, types::EncodingType};
+use aws_types::region::Region;
 use rust_embed::RustEmbed;
 use std::{
 	borrow::{Borrow, Cow},
