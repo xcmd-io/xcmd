@@ -40,7 +40,7 @@ jobs:
         cache-dependency-path: '**/package-lock.json'
 
     - name: Build binaries
-      run: cargo build --release --package xcmd-fs --package xcmd-ssh --package xcmd-s3 && cargo test --release --package xcmd-fs --package xcmd-ssh xcmd-s3
+      run: cargo build --release --package xcmd-fs --package xcmd-ssh --package xcmd-s3 && cargo test --release --package xcmd-fs --package xcmd-ssh --package xcmd-s3
 
     - name: Install frontend dependencies
       working-directory: xcmd-tauri
