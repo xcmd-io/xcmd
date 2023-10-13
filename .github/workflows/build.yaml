@@ -31,6 +31,8 @@ jobs:
 
     - name: Rust cache
       uses: swatinem/rust-cache@v2
+      with:
+        shared-key: build
 
     - name: Sync node version and setup cache
       uses: actions/setup-node@v3
