@@ -82,6 +82,10 @@ class RemoteDataSource {
 		return (await this.response).list.path;
 	}
 
+	async getName() {
+		return (await this.response).list.name;
+	}
+
 	async getLength() {
 		return (await this.response).list.files.length;
 	}
@@ -330,7 +334,9 @@ class VTable {
 				return;
 			}
 			for (const slot of tBodyRow.querySelectorAll('*[data-text]')) {
-				slot.textContent = item[slot.dataset.text];
+				const text = item[slot.dataset.text];
+				slot.textContent = text;
+				slot.title = text;
 			}
 			for (const slot of tBodyRow.querySelectorAll('*[data-html]')) {
 				slot.innerHTML = item[slot.dataset.html];

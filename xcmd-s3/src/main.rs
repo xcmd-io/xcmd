@@ -191,7 +191,7 @@ async fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>
 			key: "../".to_string(),
 			name: "..".to_string(),
 			size: 0,
-			attributes: 0,
+			attributes: "-".to_string(),
 			date: 0,
 			extension: "".to_string(),
 			icon: "region".to_string(),
@@ -224,7 +224,7 @@ async fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>
 					key,
 					name,
 					size: 0,
-					attributes: 0,
+					attributes: "-".to_string(),
 					date: 0,
 					extension: "".to_string(),
 					icon: "bucket".to_string(),
@@ -251,7 +251,7 @@ async fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>
 					key,
 					name,
 					size: 0,
-					attributes: 0,
+					attributes: "-".to_string(),
 					date: 0,
 					extension: "".to_string(),
 					icon: "object".to_string(),
@@ -275,7 +275,7 @@ async fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>
 				key,
 				name,
 				size: 0,
-				attributes: 0,
+				attributes: "-".to_string(),
 				date: 0,
 				extension: "".to_string(),
 				icon: "region".to_string(),
@@ -303,8 +303,14 @@ async fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>
 		}
 	};
 
+	let name = path_parts
+		.last()
+		.map(|x| x.to_string())
+		.unwrap_or_else(|| "/".to_string());
+
 	Ok(ListResponse {
 		path: absolute_path,
+		name,
 		files,
 	})
 }

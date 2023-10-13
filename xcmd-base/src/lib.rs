@@ -97,6 +97,8 @@ pub struct ListRequest {
 pub struct ListResponse {
 	/// Directory path.
 	pub path: String,
+	/// Name.
+	pub name: String,
 	/// Files in the directory.
 	pub files: Vec<FileInfo>,
 }
@@ -133,7 +135,7 @@ pub struct FileInfo {
 	pub date: u128,
 
 	/// Attributes.
-	pub attributes: u32,
+	pub attributes: String,
 
 	/// Indicates whether the file is active.
 	pub is_active: bool,

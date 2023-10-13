@@ -44,6 +44,8 @@ class Pane {
 
 	async setDataSource(dataSource) {
 		await this.table.setDataSource(dataSource);
+		this.tabs.updateActiveTab({ name: await dataSource.getName() });
+		console.log('name', await dataSource.getName());
 		this.address.value = await dataSource.getPath();
 		const activeIndex = await dataSource.getActiveIndex();
 		if (activeIndex !== -1) {

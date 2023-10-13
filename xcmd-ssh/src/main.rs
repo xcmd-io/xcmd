@@ -110,6 +110,10 @@ fn list_files(
 	} else {
 		path
 	};
+	let name = full_path
+		.file_name()
+		.map(|x| x.to_string_lossy().to_string())
+		.unwrap_or_else(|| "/".to_string());
 	if let Some(parent_path) = full_path.parent() {
 		files.push(get_local_file(
 			&sftp,
@@ -124,7 +128,7 @@ fn list_files(
 		}
 	}
 	let path = full_path.to_string_lossy().to_string();
-	Ok(ListResponse { path, files })
+	Ok(ListResponse { path, name, files })
 }
 
 fn get_local_file(
@@ -170,7 +174,7 @@ fn get_local_file(
 		extension,
 		size,
 		date: 0,
-		attributes: 0,
+		attributes: "-".to_string(),
 		is_active: false,
 	})
 }

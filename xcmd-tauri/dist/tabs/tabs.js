@@ -30,11 +30,13 @@ class Tabs {
 		};
 	}
 
-	addTab(item) {
-		const fns = {};
+	createTab(item) {
 		const newTab = this.tabTemplate.cloneNode(true);
+		const fns = {};
 		for (const slot of newTab.querySelectorAll('*[data-text]')) {
-			slot.textContent = item[slot.dataset.text];
+			const text = item[slot.dataset.text];
+			slot.textContent = text;
+			slot.title = text;
 		}
 		for (const slot of newTab.querySelectorAll('*[data-src]')) {
 			slot.src = item[slot.dataset.src];
@@ -45,7 +47,22 @@ class Tabs {
 		for (const slot of newTab.querySelectorAll('*[data-src-fn]')) {
 			slot.src = fns[slot.dataset.srcFn](item);
 		}
+		return newTab;
+	}
+
+	addTab(item) {
+		const newTab = this.createTab(item);
 		this.tabs.appendChild(newTab);
 		return newTab;
+	}
+
+	updateActiveTab(item) {
+		const activeTab = this.tabs.querySelector('li.selected');
+		if (!activeTab) {
+			return;
+		}
+		const updatedTab = this.createTab(item);
+		updatedTab.classList.add('selected');
+		this.tabs.replaceChild(updatedTab, activeTab);
 	}
 }
