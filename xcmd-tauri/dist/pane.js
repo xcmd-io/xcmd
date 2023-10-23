@@ -2,17 +2,15 @@ class Pane {
 	tabs;
 	address;
 	table;
-	port;
+	config;
 
-	constructor(element, port) {
+	constructor(element) {
 		this.tabs = new Tabs(element.querySelector('.tabs'));
 		this.address = element.querySelector('.address');
 		this.table = new VTable(element.querySelector('.vtable'));
-		this.port = port;
-		this.setDataSource(new RemoteDataSource(this.port, {}));
 
 		this.address.onblur = () => {
-			const newDataSource = new RemoteDataSource(this.port, {
+			const newDataSource = new RemoteDataSource(this.config, {
 				path: this.address.value,
 			});
 			this.setDataSource(newDataSource);
@@ -21,9 +19,9 @@ class Pane {
 		this.table.onKeyDown = evt => {
 			switch (evt.keyCode) {
 				case 9:
-					const otherPane = element == leftPane
-						? rightPane
-						: leftPane;
+					const otherPane = element == leftPaneElement
+						? rightPaneElement
+						: leftPaneElement;
 					otherPane.querySelector('.vtable').tBodies[0].focus();
 					return false;
 				case 84:
@@ -42,6 +40,11 @@ class Pane {
 		};
 	}
 
+	async setConfig(config) {
+		this.config = config;
+		this.setDataSource(new RemoteDataSource(this.config, {}));
+	}
+
 	async setDataSource(dataSource) {
 		await this.table.setDataSource(dataSource);
 		this.tabs.updateActiveTab({ name: await dataSource.getName() });
@@ -54,7 +57,7 @@ class Pane {
 
 	async enterDirectory() {
 		const item = await this.table.dataSource.getItem(this.table.activeIndex);
-		const newDataSource = new RemoteDataSource(this.port, {
+		const newDataSource = new RemoteDataSource(this.config, {
 			path: this.address.value,
 			key: item.key,
 		});

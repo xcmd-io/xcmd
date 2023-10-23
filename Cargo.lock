@@ -6699,7 +6699,9 @@ dependencies = [
 name = "xcmd-base"
 version = "0.1.0"
 dependencies = [
+ "actix-cors",
  "actix-web",
+ "futures-util",
  "parking_lot 0.12.1",
  "serde",
  "serde_derive",
@@ -6717,7 +6719,6 @@ dependencies = [
 name = "xcmd-fs"
 version = "0.1.0"
 dependencies = [
- "actix-cors",
  "actix-web",
  "rust-embed",
  "rustls 0.21.7",
@@ -6735,7 +6736,6 @@ dependencies = [
 name = "xcmd-s3"
 version = "0.1.0"
 dependencies = [
- "actix-cors",
  "actix-web",
  "aws-config",
  "aws-credential-types",
@@ -6756,7 +6756,6 @@ dependencies = [
 name = "xcmd-ssh"
 version = "0.1.0"
 dependencies = [
- "actix-cors",
  "actix-web",
  "env_logger",
  "log",
@@ -6766,6 +6765,8 @@ dependencies = [
  "serde_derive",
  "serde_json",
  "ssh2",
+ "tracing",
+ "tracing-actix-web",
  "xcmd-base",
 ]
 

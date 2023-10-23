@@ -5,7 +5,9 @@ edition = "2021"
 
 [dependencies]
 actix-web = { version = "4.4", features = ["rustls"] }
-parking_lot = "0.12.1"
+actix-cors = "0.6"
+futures-util = "0.3"
+parking_lot = "0.12"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_derive = "1.0"

@@ -56,6 +56,6 @@ div.container {
 	</body>
 	<script>
 const table = new VTable(document.querySelector('#vtable'));
-table.setDataSource(new RemoteDataSource(8080, { path: 'c:\\work' }))
+table.setDataSource(new RemoteDataSource({ port: 8080 }, { path: 'c:\\work' }))
 	</script>
 </html>

@@ -1,16 +1,52 @@
 mod telemetry;
 
+use actix_cors::Cors;
 use actix_web::{
-	dev::{Server, ServerHandle},
+	dev::{
+		forward_ready, Server, ServerHandle, Service, ServiceRequest, ServiceResponse, Transform,
+	},
+	http::header,
 	web::Data,
 };
+use futures_util::future::LocalBoxFuture;
 use parking_lot::Mutex;
 use serde::Deserialize;
 use serde_derive::Serialize;
-use std::{error::Error, thread, time::Duration};
+use std::future::{ready, Ready};
+use std::{env, error::Error, net::TcpListener, thread, time::Duration};
 use sysinfo::{ProcessExt, System, SystemExt};
 
-pub fn loop_while_parent_process_exists() -> Result<(), Box<dyn Error>> {
+pub fn get_port() -> Result<u16, Box<dyn Error>> {
+	let port = if let Ok(port_str) = env::var("XCMD_PORT") {
+		port_str.parse::<u16>()?
+	} else {
+		get_unused_port()?
+	};
+
+	Ok(port)
+}
+
+fn get_unused_port() -> Result<u16, std::io::Error> {
+	let listener = TcpListener::bind(("127.0.0.1", 0))?;
+	let port = listener.local_addr()?.port();
+	drop(listener);
+	Ok(port)
+}
+
+pub fn post_startup(server: &Server, port: u16) {
+	let stop_handle = Data::new(StopHandle::default());
+	stop_handle.register(server.handle());
+
+	thread::spawn(move || {
+		loop_while_parent_process_exists().ok();
+		stop_handle.stop(true);
+	});
+
+	let value = StartupResponse { port };
+	println!("{}", serde_json::to_string(&value).unwrap());
+}
+
+fn loop_while_parent_process_exists() -> Result<(), Box<dyn Error>> {
 	let mut system = System::new();
 	let pid = sysinfo::get_current_pid()?;
 	if !system.refresh_process(pid) {
@@ -29,14 +65,10 @@ pub fn loop_while_parent_process_exists() -> Result<(), Box<dyn Error>> {
 	}
 }
 
-pub fn stop_server_when_parent_process_exits(server: &Server) {
-	let stop_handle = Data::new(StopHandle::default());
-	stop_handle.register(server.handle());
-
-	thread::spawn(move || {
-		loop_while_parent_process_exists().ok();
-		stop_handle.stop(true);
-	});
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StartupResponse {
+	pub port: u16,
 }
 
 #[derive(Default)]
@@ -147,4 +179,97 @@ pub fn init_telemetry(app_name: &str) {
 		format!("{}=trace,xcmd_base=debug,actix_web=debug", app_name).into(),
 	);
 	telemetry::init_subscriber(subscriber);
+}
+
+pub struct Middleware;
+
+impl Middleware {
+	pub fn token_auth() -> TokenAuth {
+		TokenAuth::new(env::var("XCMD_TOKEN").ok())
+	}
+
+	pub fn cors() -> Cors {
+		Cors::default()
+			.allowed_origin("null")
+			.allowed_origin("tauri://localhost")
+			.allowed_origin("https://tauri.localhost")
+			.allowed_origin("http://tauri.localhost")
+			.allowed_methods(vec!["GET", "POST"])
+			.allowed_headers(vec![
+				header::AUTHORIZATION,
+				header::ACCEPT,
+				header::CONTENT_TYPE,
+			])
+			.max_age(3600)
+	}
+}
+
+pub struct TokenAuth {
+	token: Option<String>,
+}
+
+impl TokenAuth {
+	pub fn new(token: Option<String>) -> Self {
+		TokenAuth { token }
+	}
+}
+
+impl<S, B> Transform<S, ServiceRequest> for TokenAuth
+where
+	S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = actix_web::Error>,
+	S::Future: 'static,
+	B: 'static,
+{
+	type Response = ServiceResponse<B>;
+	type Error = actix_web::Error;
+	type InitError = ();
+	type Transform = TokenAuthMiddleware<S>;
+	type Future = Ready<Result<Self::Transform, Self::InitError>>;
+
+	fn new_transform(&self, service: S) -> Self::Future {
+		ready(Ok(TokenAuthMiddleware {
+			service,
+			token: self.token.clone(),
+		}))
+	}
+}
+
+pub struct TokenAuthMiddleware<S> {
+	service: S,
+	token: Option<String>,
+}
+
+impl<S, B> Service<ServiceRequest> for TokenAuthMiddleware<S>
+where
+	S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = actix_web::Error>,
+	S::Future: 'static,
+	B: 'static,
+{
+	type Response = ServiceResponse<B>;
+	type Error = actix_web::Error;
+	type Future = LocalBoxFuture<'static, Result<Self::Response, Self::Error>>;
+
+	forward_ready!(service);
+
+	fn call(&self, req: ServiceRequest) -> Self::Future {
+		if let Some(token) = &self.token {
+			if let Some(auth_header) = req.headers().get("Authorization") {
+				let auth_value = auth_header.to_str().unwrap_or_default();
+				if auth_value.starts_with("Bearer ") && &auth_value["Bearer ".len()..] != token {
+					return Box::pin(async move {
+						Err(actix_web::error::ErrorUnauthorized("Unauthorized"))
+					});
+				}
+			} else {
+				return Box::pin(async move {
+					Err(actix_web::error::ErrorUnauthorized("Unauthorized"))
+				});
+			}
+		}
+
+		// return Box::pin(async move { Err(actix_web::error::ErrorUnauthorized("Unauthorized")) });
+		let fut = self.service.call(req);
+
+		Box::pin(async move { Ok(fut.await?) })
+	}
 }

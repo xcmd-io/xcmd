@@ -9,8 +9,8 @@ pub fn get_subscriber(name: String, env_filter: String) -> impl Subscriber + Sen
 		EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(env_filter));
 	let formatting_layer = BunyanFormattingLayer::new(
 		name,
-		// Output the formatted spans to stdout.
-		std::io::stdout,
+		// Output the formatted spans to stderr.
+		std::io::stderr,
 	);
 	Registry::default()
 		.with(env_filter)

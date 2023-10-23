@@ -1,6 +1,5 @@
-use actix_cors::Cors;
 use actix_web::body::to_bytes;
-use actix_web::{get, http, post, web, App, HttpResponse, HttpServer};
+use actix_web::{get, post, web, App, HttpResponse, HttpServer};
 use rust_embed::RustEmbed;
 use ssh2::{FileStat, Session, Sftp};
 use std::env;
@@ -8,7 +7,8 @@ use std::error::Error;
 use std::net::TcpStream;
 use std::sync::Arc;
 use xcmd_base::{
-	stop_server_when_parent_process_exits, FileInfo, ListRequest, ListResponse, Request, Response,
+	get_port, init_telemetry, post_startup, FileInfo, ListRequest, ListResponse, Middleware,
+	Request, Response,
 };
 
 #[post("/")]
@@ -45,9 +45,12 @@ async fn icon(name: web::Path<String>) -> Result<HttpResponse, Box<dyn Error>> {
 }
 
 #[actix_web::main]
-async fn main() -> std::io::Result<()> {
-	std::env::set_var("RUST_LOG", "debug");
-	std::env::set_var("RUST_BACKTRACE", "1");
+async fn main() -> Result<(), Box<dyn Error>> {
+	init_telemetry("xcmd_ssh");
+	let port = get_port()?;
+
+	env::set_var("RUST_LOG", "debug");
+	env::set_var("RUST_BACKTRACE", "1");
 	env_logger::init();
 
 	let tcp = TcpStream::connect(env::var("SSH_HOST").unwrap_or_default())?;
@@ -66,28 +69,21 @@ async fn main() -> std::io::Result<()> {
 	let sftp = Arc::new(session.sftp()?);
 
 	let server = HttpServer::new(move || {
-		let cors = Cors::default()
-			.allowed_origin("null")
-			.allowed_origin("tauri://localhost")
-			.allowed_origin("https://tauri.localhost")
-			.allowed_origin("http://tauri.localhost")
-			.allowed_methods(vec!["GET", "POST"])
-			.allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-			.allowed_header(http::header::CONTENT_TYPE)
-			.max_age(3600);
-
 		App::new()
 			.app_data(web::Data::new(sftp.clone()))
-			.wrap(cors)
+			.wrap(Middleware::cors())
+			.wrap(Middleware::token_auth())
+			.wrap(TracingLogger::default())
 			.service(icon)
 			.service(enact)
 	})
-	.bind(("127.0.0.1", 8082))?
+	.bind(("127.0.0.1", port))?
 	.run();
 
-	stop_server_when_parent_process_exits(&server);
+	post_startup(&server, port);
 
-	server.await
+	server.await?;
+	Ok(())
 }
 
 fn list_files(

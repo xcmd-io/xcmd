@@ -52,19 +52,26 @@ function compareString(a, b) {
 }
 
 class RemoteDataSource {
-	port;
+	config;
 	response;
 
-	constructor(port, request) {
-		this.port = port;
-		this.response = this.listFiles(request, port);
+	constructor(config, request) {
+		this.config = config;
+		this.response = this.listFiles(request);
+	}
+
+	baseUri() {
+		const { port } = this.config;
+		return 'http://localhost:' + port;
 	}
 
 	async listFiles(request) {
-		const response = await fetch('http://localhost:' + this.port, {
+		const { token } = this.config;
+		const response = await fetch(this.baseUri(), {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
 			},
 			body: JSON.stringify({
 				list: request,
@@ -271,17 +278,17 @@ class VTable {
 
 		const fns = {
 			icon: (item, slot) => {
-				if (!this.dataSource.port) {
+				if (!this.dataSource.config) {
 					return item.isDirectory ? 'folder.svg' : 'file.svg';
 				}
-				const iconUrl = `http://localhost:${this.dataSource.port}/icons/${item.icon}`;
+				const iconUrl = `${this.dataSource.baseUri()}/icons/${item.icon}`;
 				if (item.iconAlt) {
 					const cachedIcon = iconCache.get(iconUrl);
 					if (cachedIcon) {
 						slot.parentNode.replaceChild(cachedIcon.cloneNode(), slot);
 						return iconUrl;
 					}
-					const altIconUrl = `http://localhost:${this.dataSource.port}/icons/${item.iconAlt}`;
+					const altIconUrl = `${this.dataSource.baseUri()}/icons/${item.iconAlt}`;
 					const image = slot.cloneNode();
 					image.src = iconUrl;
 					image.onload = function () {

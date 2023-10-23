@@ -1,5 +1,4 @@
-use actix_cors::Cors;
-use actix_web::{body::to_bytes, get, http, post, web, App, HttpResponse, HttpServer};
+use actix_web::{body::to_bytes, get, post, web, App, HttpResponse, HttpServer};
 use aws_sdk_s3::{config::Credentials, types::EncodingType};
 use aws_types::region::Region;
 use rust_embed::RustEmbed;
@@ -14,7 +13,7 @@ use std::{
 use tracing::trace;
 use tracing_actix_web::TracingLogger;
 use xcmd_base::{
-	init_telemetry, stop_server_when_parent_process_exits, FileInfo, ListRequest, ListResponse,
+	get_port, init_telemetry, post_startup, FileInfo, ListRequest, ListResponse, Middleware,
 	Request, Response,
 };
 
@@ -49,32 +48,25 @@ async fn icon(name: web::Path<String>) -> Result<HttpResponse, Box<dyn Error>> {
 }
 
 #[actix_web::main]
-async fn main() -> std::io::Result<()> {
+async fn main() -> Result<(), Box<dyn Error>> {
 	init_telemetry("xcmd_s3");
+	let port = get_port()?;
 
 	let server = HttpServer::new(|| {
-		let cors = Cors::default()
-			.allowed_origin("null")
-			.allowed_origin("tauri://localhost")
-			.allowed_origin("https://tauri.localhost")
-			.allowed_origin("http://tauri.localhost")
-			.allowed_methods(vec!["GET", "POST"])
-			.allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-			.allowed_header(http::header::CONTENT_TYPE)
-			.max_age(3600);
-
 		App::new()
+			.wrap(Middleware::cors())
+			.wrap(Middleware::token_auth())
 			.wrap(TracingLogger::default())
-			.wrap(cors)
 			.service(icon)
 			.service(enact)
 	})
-	.bind(("127.0.0.1", 8081))?
+	.bind(("127.0.0.1", port))?
 	.run();
 
-	stop_server_when_parent_process_exits(&server);
+	post_startup(&server, port);
 
-	server.await
+	server.await?;
+	Ok(())
 }
 
 async fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>> {
