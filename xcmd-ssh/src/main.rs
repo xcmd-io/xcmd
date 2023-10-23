@@ -2,6 +2,7 @@ use actix_web::body::to_bytes;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer};
 use rust_embed::RustEmbed;
 use ssh2::{FileStat, Session, Sftp};
+use tracing_actix_web::TracingLogger;
 use std::env;
 use std::error::Error;
 use std::net::TcpStream;
