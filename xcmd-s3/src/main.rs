@@ -101,13 +101,13 @@ async fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>
 
 	let separator = Cow::Borrowed("/");
 
-	let mut active_name = None::<Cow<str>>;
+	let mut active_key = None::<Cow<str>>;
 
 	// this normalizes the path into a vector of string components
 	// (invalid path is recognized as an empty vector)
 	let mut path_parts = Vec::<Cow<str>>::new();
 	for component in full_path.components() {
-		active_name = None;
+		active_key = None;
 
 		match component {
 			Component::RootDir => {
@@ -119,8 +119,8 @@ async fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>
 			}
 			Component::ParentDir => {
 				// if there is no parent directory, break
-				active_name = path_parts.pop();
-				if active_name.is_none() {
+				active_key = path_parts.pop();
+				if active_key.is_none() {
 					break;
 				}
 			}
@@ -139,8 +139,8 @@ async fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>
 		}
 	}
 
-	let active_key = if let Some(name) = active_name {
-		Some(format!("{}/", name))
+	let active_key = if let Some(key) = active_key {
+		Some(format!("{}/", key))
 	} else {
 		None
 	};

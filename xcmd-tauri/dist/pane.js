@@ -57,10 +57,16 @@ class Pane {
 
 	async enterDirectory() {
 		const item = await this.table.dataSource.getItem(this.table.activeIndex);
-		const newDataSource = new RemoteDataSource(this.config, {
-			path: this.address.value,
-			key: item.key,
-		});
-		await this.setDataSource(newDataSource);
+		if (item.isDirectory) {
+			const newDataSource = new RemoteDataSource(this.config, {
+				path: this.address.value,
+				key: item.key,
+			});
+			await this.setDataSource(newDataSource);
+		} else {
+			console.log(this.address.value, item);
+			const invoke = window.__TAURI__.invoke;
+			invoke('open_detached', { directory: this.address.value, key: item.key });
+		}
 	}
 }

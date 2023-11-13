@@ -3,20 +3,27 @@
 	windows_subsystem = "windows"
 )]
 
-use std::process::Command;
+use std::{path::Path, process::Command};
 
-fn main() {
+fn main() -> Result<(), tauri::Error> {
 	tauri::Builder::default()
 		.plugin(tauri_plugin_window_state::Builder::default().build())
 		.invoke_handler(tauri::generate_handler![spawn_process])
+		.invoke_handler(tauri::generate_handler![open_detached])
 		.run(tauri::generate_context!())
-		.expect("failed to run app");
 }
 
 #[tauri::command]
-fn spawn_process(process: String, arguments: Vec<String>) {
+fn spawn_process(process: String, arguments: Vec<String>) -> Result<(), String> {
 	Command::new(process)
 		.args(arguments)
 		.spawn()
-		.expect("failed to spawn process");
+		.map(|_| ())
+		.map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+fn open_detached(directory: String, key: String) -> Result<(), String> {
+	let path = Path::new(&directory).to_path_buf().join(key);
+	open::that_detached(path).map_err(|e| e.to_string())
 }

@@ -162,7 +162,7 @@ fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>> {
 	}
 
 	// active name is 'c' for case when {path: 'a/b/c', key: '..'}
-	let active_name = if let Some(ref key) = request.key {
+	let active_key = if let Some(ref key) = request.key {
 		if key == "../" {
 			path.file_name().map(|x| x.to_string_lossy().to_string())
 		} else {
@@ -176,7 +176,7 @@ fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>> {
 	if let Ok(read_dir) = fs::read_dir(&full_path) {
 		for child_path in read_dir {
 			match child_path {
-				Ok(dir_entry) => files.push(get_local_file(&dir_entry.path(), None, &active_name)),
+				Ok(dir_entry) => files.push(get_local_file(&dir_entry.path(), None, &active_key)),
 				Err(err) => eprintln!("Error: {}", err),
 			}
 		}
@@ -269,7 +269,7 @@ fn permissions_to_string(permissions: &Permissions) -> String {
 	.join("")
 }
 
-fn get_local_file(path: &Path, name: Option<String>, active_name: &Option<String>) -> FileInfo {
+fn get_local_file(path: &Path, name: Option<String>, active_key: &Option<String>) -> FileInfo {
 	let path = Path::new(path);
 	// let full_path = trim_long_path_prefix(&path.to_string_lossy().into_owned()).to_owned();
 	let metadata = path.metadata();
@@ -287,16 +287,19 @@ fn get_local_file(path: &Path, name: Option<String>, active_name: &Option<String
 			.as_millis();
 		attributes = permissions_to_string(&metadata.permissions());
 	};
-	let (name, extension) = if let Some(name) = name {
-		(name, String::from(""))
+	let (key, name, extension) = if let Some(name) = name {
+		(name.clone(), name, String::from(""))
 	} else if is_dir {
 		let filename = path
 			.file_name()
 			.map(|x| x.to_string_lossy().into_owned())
 			.unwrap_or_else(|| String::from(".."));
-		(filename, String::from(""))
+		(filename.clone(), filename, String::from(""))
 	} else {
 		(
+			path.file_name()
+				.map(|x| x.to_string_lossy().into_owned())
+				.unwrap_or_else(|| String::from("..")),
 			path.file_stem()
 				.map(|x| x.to_string_lossy().into_owned())
 				.unwrap_or_else(|| String::from("..")),
@@ -306,7 +309,7 @@ fn get_local_file(path: &Path, name: Option<String>, active_name: &Option<String
 		)
 	};
 	FileInfo {
-		key: format!("{}{}", name, if is_dir { "/" } else { "" }),
+		key: format!("{}{}", key, if is_dir { "/" } else { "" }),
 		is_directory: is_dir,
 		icon: format!(
 			"{}?path={}",
@@ -320,8 +323,8 @@ fn get_local_file(path: &Path, name: Option<String>, active_name: &Option<String
 		size,
 		date,
 		attributes,
-		is_active: if let Some(active_name) = &active_name {
-			is_dir && active_name == &name
+		is_active: if let Some(active_key) = &active_key {
+			is_dir && active_key == &key
 		} else {
 			false
 		},
