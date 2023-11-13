@@ -62,6 +62,7 @@ class RemoteDataSource {
 
 	baseUri() {
 		const { port } = this.config;
+		// TODO: use TLS when tauri adds support to trust self-signed certificates
 		return 'http://localhost:' + port;
 	}
 

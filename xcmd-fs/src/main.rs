@@ -111,6 +111,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 			.service(enact)
 	})
 	.bind(("127.0.0.1", port))?
+	// TODO: use TLS when tauri adds support to trust self-signed certificates
+	// .bind_rustls_021(format!("127.0.0.1:{}", port), load_rustls_config()?)?
 	.run();
 
 	post_startup(&server, port);

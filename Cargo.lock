@@ -167,9 +167,11 @@ dependencies = [
  "rustls-webpki",
  "tokio",
  "tokio-rustls 0.23.4",
+ "tokio-rustls 0.24.1",
  "tokio-util",
  "tracing",
- "webpki-roots",
+ "webpki-roots 0.22.6",
+ "webpki-roots 0.25.2",
 ]
 
 [[package]]
@@ -3650,6 +3652,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8835116a5c179084a830efb3adc117ab007512b535bc1a21c991d3b32a6b44dd"
 
 [[package]]
+name = "pem"
+version = "3.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3163d2912b7c3b52d651a055f2c7eec9ba5cd22d26ef75b8dd3a59980b185923"
+dependencies = [
+ "base64 0.21.4",
+ "serde",
+]
+
+[[package]]
 name = "percent-encoding"
 version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4057,6 +4069,18 @@ checksum = "5ce3fb6ad83f861aac485e76e1985cd109d9a3713802152be56c3b1f0e0658ed"
 dependencies = [
  "crossbeam-deque",
  "crossbeam-utils",
+]
+
+[[package]]
+name = "rcgen"
+version = "0.11.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "52c4f3084aa3bc7dfbba4eff4fab2a54db4324965d8872ab933565e6fbd83bc6"
+dependencies = [
+ "pem",
+ "ring 0.16.20",
+ "time",
+ "yasna",
 ]
 
 [[package]]
@@ -6203,6 +6227,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "webpki-roots"
+version = "0.25.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "14247bb57be4f377dfb94c72830b8ce8fc6beac03cf4bf7b9732eadd414123fc"
+
+[[package]]
 name = "webview2-com"
 version = "0.19.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6703,6 +6733,9 @@ dependencies = [
  "actix-web",
  "futures-util",
  "parking_lot 0.12.1",
+ "rcgen",
+ "rustls 0.21.7",
+ "rustls-pemfile",
  "serde",
  "serde_derive",
  "serde_json",
@@ -6800,6 +6833,15 @@ name = "xmlparser"
 version = "0.13.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "66fee0b777b0f5ac1c69bb06d361268faafa61cd4682ae064a171c16c433e9e4"
+
+[[package]]
+name = "yasna"
+version = "0.5.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e17bb3549cc1321ae1296b9cdc2698e2b6cb1992adfa19a8c72e5b7a738f44cd"
+dependencies = [
+ "time",
+]
 
 [[package]]
 name = "zbus"

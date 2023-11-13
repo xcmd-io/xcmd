@@ -10,10 +10,16 @@ use actix_web::{
 };
 use futures_util::future::LocalBoxFuture;
 use parking_lot::Mutex;
+use rcgen::generate_simple_self_signed;
+use rustls::{Certificate, PrivateKey, ServerConfig};
+use rustls_pemfile::{certs, pkcs8_private_keys};
 use serde::Deserialize;
 use serde_derive::Serialize;
-use std::future::{ready, Ready};
 use std::{env, error::Error, net::TcpListener, thread, time::Duration};
+use std::{
+	future::{ready, Ready},
+	io::BufReader,
+};
 use sysinfo::{ProcessExt, System, SystemExt};
 
 pub fn get_port() -> Result<u16, Box<dyn Error>> {
@@ -272,4 +278,40 @@ where
 
 		Box::pin(async move { Ok(fut.await?) })
 	}
+}
+
+pub fn load_rustls_config() -> Result<ServerConfig, Box<dyn Error>> {
+	let config = ServerConfig::builder()
+		.with_safe_defaults()
+		.with_no_client_auth();
+
+	let subject_alt_names = vec!["tauri.localhost".to_string(), "localhost".to_string()];
+	let cert = generate_simple_self_signed(subject_alt_names)?;
+	let public_key_pem = cert.serialize_pem().unwrap();
+	let private_key_pem = cert.serialize_private_key_pem();
+
+	let key_file = &mut BufReader::new(private_key_pem.as_bytes());
+	let cert_file = &mut BufReader::new(public_key_pem.as_bytes());
+
+	// convert files to key/cert objects
+	let cert_chain = certs(cert_file)?
+		.into_iter()
+		.map(Certificate)
+		.collect::<Vec<Certificate>>();
+	let mut keys: Vec<PrivateKey> = pkcs8_private_keys(key_file)?
+		.into_iter()
+		.map(PrivateKey)
+		.collect();
+
+	// exit if no keys could be parsed
+	if keys.is_empty() {
+		eprintln!("Could not locate PKCS 8 private keys.");
+		std::process::exit(1);
+	}
+
+	let mut result = config.with_single_cert(cert_chain, keys.remove(0))?;
+
+	result.alpn_protocols = vec!["h2".to_string().into(), "http/1.1".to_string().into()];
+
+	Ok(result)
 }
