@@ -1,8 +1,8 @@
 name: Release
 on:
   push:
-    tags:
-    - 'v*'
+    branches:
+    - test
   workflow_dispatch:
 
 jobs:
@@ -53,11 +53,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-        TAURI_KEY_PASSWORD: ''
       with:
         tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
         projectPath: xcmd-tauri
         releaseName: 'Cross Commander v__VERSION__'
         releaseBody: ${{ github.event.head_commit.message }}
-        releaseDraft: false
+        releaseDraft: true
         prerelease: false
