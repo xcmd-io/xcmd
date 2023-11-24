@@ -31,8 +31,6 @@
 				vertical-align: bottom;
 			}
 		</style>
-		<link href="tabs.css" rel="stylesheet"/>
-		<script src="tabs.js"></script>
 	</head>
 	<body>
 		<div class="container">
@@ -52,7 +50,8 @@
 			</ul>
 		</div>
 	</body>
-	<script>
-new Tabs(document.querySelector('.tabs'))
+	<script type="module">
+import { Tabs } from './tabs.mjs';
+new Tabs(document.querySelector('.tabs'));
 	</script>
 </html>

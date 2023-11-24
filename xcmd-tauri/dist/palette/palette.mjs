@@ -1,11 +1,40 @@
+import { Code, Mod, getKey } from '../keyboard.mjs';
+import { ArrayDataSource, VTable } from '../vtable/vtable.mjs';
+import stylesheet from './palette.css' assert { type: 'css' };
+
+document.adoptedStyleSheets.push(stylesheet);
+
+/**
+ * Normalizes a string for matching.
+ *
+ * @param {string} value
+ * @returns {string}
+ */
 function normalize(value) {
 	return removeDiacritics(value).toLowerCase();
 }
 
+/**
+ * @param {string} message
+ * @returns {never}
+ */
+function error(message) {
+	throw new Error(message);
+}
+
 class Entry {
+	/** @type {string[]} */
 	key;
+
+	/** @type {unknown} */
 	value;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param {string} key
+	 * @param {unknown} value
+	 */
 	constructor(key, value) {
 		this.key = normalize(key).split(/\s+/g);
 		this.value = value;
@@ -13,9 +42,15 @@ class Entry {
 
 	// vi    t                e
 	// View: Toggle Iterated Terminal
+	/**
+	 * Matches a normalized value with the entry key.
+	 *
+	 * @param {string} value - Must be normalized.
+	 * @returns {string[] | null}
+	 */
 	matchKey(value) {
 		let iteration = 0;
-		const result = [];
+		const /** @type string[] */ result = [];
 
 		if (!value) {
 			return result;
@@ -25,10 +60,10 @@ class Entry {
 		let wordIndex = 0;
 		let index = 0;
 		while (wordIndex < this.key.length) {
-			if (++iteration > 1000) { throw '!!!SADGE!!!'; }
+			if (++iteration > 1000) { throw new Error('too many iterations'); }
 			const word = this.key[wordIndex];
 			while (/\s/.test(value.charAt(index))) {
-				if (++iteration > 1000) { throw '!!!SADGE!!!'; }
+				if (++iteration > 1000) { throw new Error('too many iterations'); }
 				if (++index >= value.length) {
 					// console.log('return');
 					return result;
@@ -37,10 +72,10 @@ class Entry {
 
 			let charIndex = 0;
 			while (charIndex < word.length) {
-				if (++iteration > 1000) { throw '!!!SADGE!!!'; }
+				if (++iteration > 1000) { throw new Error('too many iterations'); }
 				if (word.charAt(charIndex) === value.charAt(index)) {
 					if (++index >= value.length) {
-						result.push(word.substr(0, charIndex + 1));
+						result.push(word.substring(0, charIndex + 1));
 						// console.log('return2');
 						return result;
 					}
@@ -50,14 +85,14 @@ class Entry {
 				++charIndex;
 			}
 
-			result.push(word.substr(0, charIndex));
+			result.push(word.substring(0, charIndex));
 			++wordIndex;
 
 			// console.log('wordIndex', wordIndex);
 			if (wordIndex === this.key.length) {
 				// console.log('candidate', result, index)
 				while (result.length) {
-					if (++iteration > 1000) { throw '!!!SADGE!!!'; }
+					if (++iteration > 1000) { throw new Error('too many iterations'); }
 					// console.log('result.length', result.length);
 					const lastMatch = result[result.length - 1];
 					if (!lastMatch.length) {
@@ -80,23 +115,32 @@ class Entry {
 	}
 }
 
-class Palette {
+export class Palette {
+	/** @type {HTMLElement} */
 	element;
+	/** @type {any[]} */
 	entries;
+	/** @type {HTMLInputElement} */
 	input;
+	/** @type {VTable} */
 	table;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param {HTMLElement} element
+	 */
 	constructor(element) {
 		this.element = element;
 		this.entries = [];
-		this.input = element.querySelector(':scope>p>input');
-		this.table = new VTable(element.querySelector(':scope>.vtable'));
+		this.input = element.querySelector(':scope>p>input') ?? error('input for palette not found');
+		this.table = new VTable(element.querySelector(':scope>table.vtable') ?? error('virtual table for palette not found'));
 
 		this.input.oninput = () => {
 			this.updateDataSource(this.input.value);
 		};
 
-		this.element.parentElement.addEventListener('keydown', e => {
+		this.element.parentElement?.addEventListener('keydown', e => {
 			switch (getKey(e)) {
 				case Mod.Ctrl | Code.KeyP:
 					e.preventDefault();
@@ -126,7 +170,7 @@ class Palette {
 				case Code.PageDown:
 				case Code.UpArrow:
 				case Code.DownArrow:
-					this.table.tBody.parentElement.onkeydown(e);
+					this.table.tBody.parentElement?.onkeydown?.(e);
 					e.preventDefault();
 					this.input.focus();
 					return false;
@@ -134,9 +178,15 @@ class Palette {
 		};
 	}
 
+	/**
+	 * @param {string} value
+	 * @returns {void}
+	 */
 	show(value) {
-		for (const element of this.element.parentElement.children) {
-			element.inert = element !== this.element;
+		for (const element of this.element.parentElement?.children ?? []) {
+			if (element instanceof HTMLElement) {
+				element.inert = element !== this.element;
+			}
 		}
 		this.input.value = value;
 		this.updateDataSource(this.input.value);
@@ -144,30 +194,44 @@ class Palette {
 	}
 
 	hide() {
-		for (const element of this.element.parentElement.children) {
-			element.inert = element !== element.parentElement.children[0];
+		for (const element of this.element.parentElement?.children ?? []) {
+			if (element instanceof HTMLElement) {
+				element.inert = element !== element.parentElement?.children[0];
+			}
 		}
 	}
 
+	/**
+	 * @param {string} value
+	 * @returns {void}
+	 */
 	updateDataSource(value) {
-		value = normalize(value);
+		const normalizedValue = normalize(value);
 		const data = this.entries
 			.flatMap(item => {
-				const matchedKey = item.matchKey(value);
+				const matchedKey = item.matchKey(normalizedValue);
 				return matchedKey ? [{ ...item.value, matchedKey }] : []
 			});
 		this.table.tBody.style.height = `${Math.min(20, data.length) * this.table.rowHeight + 2}px`;
-		this.table.tBody.parentElement.style.display = data.length ? '' : 'none';
+		if (this.table.tBody.parentElement) {
+			this.table.tBody.parentElement.style.display = data.length ? '' : 'none';
+		}
 		const dataSource = new ArrayDataSource(data);
 		this.table.setDataSource(dataSource);
 	}
 
-	setData(data, keyExtractor = x => x) {
+	/**
+	 * @template TItem
+	 * @param {TItem[]} data
+	 * @param {(item: TItem) => string} keyExtractor
+	 */
+	setData(data, keyExtractor = x => String(x)) {
 		this.entries = data.map(item => new Entry(keyExtractor(item), item));
 		this.updateDataSource(this.input.value);
 	}
 }
 
+/** @type Record<string, string> */
 const defaultDiacriticsRemovalMap = {
 	'A': '\u0041\u24B6\uFF21\u00C0\u00C1\u00C2\u1EA6\u1EA4\u1EAA\u1EA8\u00C3\u0100\u0102\u1EB0\u1EAE\u1EB4\u1EB2\u0226\u01E0\u00C4\u01DE\u1EA2\u00C5\u01FA\u01CD\u0200\u0202\u1EA0\u1EAC\u1EB6\u1E00\u0104\u023A\u2C6F',
 	'AA': '\uA732',
@@ -257,6 +321,7 @@ const defaultDiacriticsRemovalMap = {
 	'z': '\u007A\u24E9\uFF5A\u017A\u1E91\u017C\u017E\u1E93\u1E95\u01B6\u0225\u0240\u2C6C\uA763',
 };
 
+/** @type Record<string, string> */
 const diacriticsMap = {};
 for (const base in defaultDiacriticsRemovalMap) {
 	for (const letter of defaultDiacriticsRemovalMap[base]) {
@@ -264,6 +329,12 @@ for (const base in defaultDiacriticsRemovalMap) {
 	}
 }
 
+/**
+ * Removes diacritics from a string.
+ *
+ * @param {string} text
+ * @returns {string}
+ */
 function removeDiacritics(text) {
 	return text.replace(/[^\u0000-\u007E]/g, c => diacriticsMap[c] || c);
 }

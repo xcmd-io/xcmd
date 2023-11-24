@@ -26,9 +26,6 @@
 			vertical-align: bottom;
 		}
 	</style>
-	<link href="palette.css" rel="stylesheet" />
-	<script src="palette.js"></script>
-	<script src="../vtable/vtable.js"></script>
 </head>
 
 <body>
@@ -48,7 +45,9 @@
 		</div>
 	</div>
 </body>
-<script>
+<script type="module">
+	import { Palette } from './palette.mjs';
+
 	const commands = [
 		"Go to File",
 		"Go to Symbol",

@@ -23,8 +23,6 @@
 				border: 1px solid #000;
 			}
 		</style>
-		<link href="vsplit.css" rel="stylesheet"/>
-		<script src="vsplit.js"></script>
 	</head>
 	<body>
 		<div class="container">
@@ -59,7 +57,8 @@
 			</div>
 		</div>
 	</body>
-	<script>
+	<script type="module">
+import { VSplit } from './vsplit.mjs';
 new VSplit(document.querySelector('.vsplit'))
 	</script>
 </html>

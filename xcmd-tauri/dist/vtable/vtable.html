@@ -25,8 +25,6 @@ div.container {
 	vertical-align: bottom;
 }
 		</style>
-		<link href="vtable.css" rel="stylesheet"/>
-		<script src="vtable.js"></script>
 	</head>
 	<body>
 		<p>Paragraph</p>
@@ -54,8 +52,11 @@ div.container {
 			</table>
 		</div>
 	</body>
-	<script>
+	<script type="module">
+import { GeneratedDataSource, RemoteDataSource, VTable } from './vtable.mjs';
+const dataSource = new GeneratedDataSource();
+//const dataSource = new RemoteDataSource({ port: 8080 }, { path: 'c:\\work' })
 const table = new VTable(document.querySelector('#vtable'));
-table.setDataSource(new RemoteDataSource({ port: 8080 }, { path: 'c:\\work' }))
+table.setDataSource(dataSource);
 	</script>
 </html>

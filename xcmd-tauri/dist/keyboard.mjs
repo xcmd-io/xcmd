@@ -69,14 +69,14 @@ function determineBrowser() {
 	return Browser.Unknown;
 }
 
-const Mod = {
+export const Mod = {
 	Ctrl: 1 << 15,
 	Alt: 1 << 14,
 	Shift: 1 << 13,
 	Meta: 1 << 12,
 };
 
-const Code = {
+export const Code = {
 	Unknown: 0,
 	PauseBreak: 1,
 	Backspace: 2,
@@ -188,6 +188,7 @@ const Code = {
 	OEM_102: 108,
 };
 
+/** @type {Record<number, number>} */
 const KEY_CODE_MAP = {};
 (function () {
 	KEY_CODE_MAP[3] = Code.PauseBreak; // VK_CANCEL 0x03 Control-break processing
@@ -326,7 +327,11 @@ const KEY_CODE_MAP = {};
 	}
 })();
 
-function getKey(e) {
+/**
+ * @param {KeyboardEvent} e
+ * @returns {number}
+ */
+export function getKey(e) {
 	const code = KEY_CODE_MAP[e.keyCode] || Code.Unknown;
 	let key = Code.Unknown;
 	if (code !== Code.Ctrl && code !== Code.Shift && code !== Code.Alt && code !== Code.Meta) {

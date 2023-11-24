@@ -5,80 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" href="floppy.svg" type="image/svg+xml">
 		<title>Cross Commander</title>
-		<style>
-html {
-	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-	font-size: small;
-}
-
-body {
-	width: 100vw;
-	height: 100vh;
-	overflow: hidden;
-	margin: 0;
-	padding: 0;
-	padding-top: 3px;
-	background: #eee;
-	box-sizing: border-box;
-	cursor: default;
-	-webkit-user-select: none;
-	user-select: none;
-}
-
-body > *[inert] {
-	pointer-events: none;
-	visibility: hidden;
-}
-
-body > *[inert]:first-child {
-	visibility: visible;
-	filter: brightness(85%);
-}
-
-.icon {
-	width: 16px;
-	height: 16px;
-	display: inline-block;
-	vertical-align: bottom;
-}
-
-input {
-	font: inherit;
-	cursor: text;
-}
-
-.tabs {
-	align-self: flex-start;
-	flex-shrink: 0;
-	flex-grow: 0;
-}
-
-.address {
-	box-sizing: border-box;
-	padding: 3px;
-	width: 100%;
-	border: 1px solid #eee;
-}
-.address:focus {
-	border: 1px solid #06b;
-	outline: none;
-}
-
-.vsplit-pane {
-	display: flex;
-	flex-direction: column;
-}
-		</style>
-		<link href="vtable/vtable.css" rel="stylesheet"/>
-		<link href="vsplit/vsplit.css" rel="stylesheet"/>
-		<link href="tabs/tabs.css" rel="stylesheet"/>
-		<link href="palette/palette.css" rel="stylesheet"/>
-		<script defer src="keyboard.js"></script>
-		<script defer src="vtable/vtable.js"></script>
-		<script defer src="vsplit/vsplit.js"></script>
-		<script defer src="tabs/tabs.js"></script>
-		<script defer src="palette/palette.js"></script>
-		<script defer src="pane.js"></script>
+		<script defer type="module" src="index.mjs"></script>
 	</head>
 	<body>
 		<div id="vsplit" class="vsplit">
@@ -124,5 +51,4 @@ input {
 			</table>
 		</div>
 	</body>
-	<script defer src="main.js"></script>
 </html>
