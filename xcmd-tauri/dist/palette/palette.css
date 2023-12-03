@@ -11,10 +11,11 @@
 	border-spacing: 0;
 	white-space: nowrap;
 	table-layout: fixed;
-	border: 1px solid #ccc;
-	background: #eee;
+	border: 1px solid var(--border);
+	color: var(--foreground);
+	background: var(--background);
 	box-sizing: border-box;
-	box-shadow: 0 0 6px #ccc;
+	box-shadow: 0 0 6px var(--border);
 	padding: 3px;
 }
 
@@ -28,12 +29,14 @@
 	box-sizing: border-box;
 	padding: 3px;
 	width: 100%;
-	border: 1px solid #ccc;
+	color: var(--input-foreground);
+	background: var(--input-background);
+	border: 1px solid var(--border);
 }
 
 .palette input:focus {
 	outline: 0;
-	border: 1px solid #06b;
+	border: 1px solid var(--input-border);
 }
 
 .palette .vtable {
@@ -44,8 +47,9 @@
 	border-spacing: 0;
 	white-space: nowrap;
 	table-layout: fixed;
-	border: 1px solid #ccc;
-	background: #fff;
+	border: 1px solid var(--border);
+	color: var(--input-foreground);
+	background: var(--input-background);
 }
 
 .palette .vtable,
@@ -61,8 +65,9 @@
 	width: 100%;
 	overflow: scroll;
 	overflow-x: hidden;
-	scrollbar-color: #eee #eee;
-	background: #eee;
+	color: var(--foreground);
+	background: var(--background);
+	scrollbar-color: var(--background) var(--background);
 	top: 0;
 }
 
@@ -99,7 +104,7 @@
 }
 
 .palette .vtable tbody tr:focus {
-	outline: 1px #000 dotted;
+	outline: 1px var(--outline) dotted;
 }
 
 .palette .vtable--align-right {

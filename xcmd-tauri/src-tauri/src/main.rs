@@ -8,6 +8,7 @@ use std::{path::Path, process::Command};
 fn main() -> Result<(), tauri::Error> {
 	tauri::Builder::default()
 		.plugin(tauri_plugin_window_state::Builder::default().build())
+		.plugin(tauri_plugin_store::Builder::default().build())
 		.invoke_handler(tauri::generate_handler![spawn_process])
 		.invoke_handler(tauri::generate_handler![open_detached])
 		.run(tauri::generate_context!())

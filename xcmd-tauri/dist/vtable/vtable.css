@@ -6,8 +6,9 @@
 	border-spacing: 0;
 	white-space: nowrap;
 	table-layout: fixed;
-	border: 1px solid #ccc;
-	background: #fff;
+	border: 1px solid var(--border);
+	color: var(--input-foreground);
+	background: var(--input-background);
 }
 
 .vtable,
@@ -23,8 +24,9 @@
 	width: 100%;
 	overflow: scroll;
 	overflow-x: hidden;
-	scrollbar-color: #eee #eee;
-	background: #eee;
+	color: var(--foreground);
+	background: var(--background);
+	scrollbar-color: var(--background) var(--background);
 	top: 0;
 }
 
@@ -60,7 +62,7 @@
 }
 
 .vtable tbody tr:focus {
-	outline: 1px #000 dotted;
+	outline: 1px var(--outline) dotted;
 }
 
 .vtable--align-right {

@@ -1,0 +1,9 @@
+:root {
+	--foreground: red;
+	--background: green; /* #eee */
+	--border: orange; /* #ccc */
+	--outline: cyan; /* #000 */
+	--input-foreground: red;
+	--input-background: magenta; /* #fff */
+	--input-border: yellow; /* #06b */
+}

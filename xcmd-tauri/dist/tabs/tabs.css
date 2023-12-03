@@ -4,6 +4,8 @@ ul.tabs {
 	padding: 0;
 	overflow-x: scroll;
 	width: 100%;
+	color: var(--foreground);
+	background: var(--background);
 }
 
 ul.tabs li {
@@ -16,14 +18,16 @@ ul.tabs li {
 	white-space: nowrap;
 	margin: 0;
 	padding: 4px;
-	background: #eee;
-	border: 1px solid #eee;
-	border-right-color: #ddd;
+	color: var(--foreground);
+	background: var(--background);
+	border: 1px solid var(--background);
+	border-right-color: var(--border);
 }
 
 ul.tabs li.selected {
-	background: #fff;
-	border-bottom-color: #fff;
+	color: var(--input-foreground);
+	background: var(--input-background);
+	border-bottom-color: var(--input-background);
 }
 
 ul.tabs::-webkit-scrollbar {
@@ -31,7 +35,7 @@ ul.tabs::-webkit-scrollbar {
 }
 
 ul.tabs::-webkit-scrollbar-track {
-	background: #fff;
+	background: var(--input-background);
 }
 
 ul.tabs::-webkit-scrollbar-thumb {

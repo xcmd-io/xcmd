@@ -3,22 +3,22 @@ div.vsplit {
 	display: flex;
 	height: 100%;
 	width: 100%;
-	background: #eee;
+	background: var(--background);
 }
 
 div.vsplit .vsplit-handle {
 	cursor: col-resize;
-	background: #ddd;
+	background: var(--background);
 	width: 3px;
 }
 
 div.vsplit .vsplit-handle:hover {
-	background: #aaa;
+	background: var(--border);
 }
 
 div.vsplit .vsplit-handle-preview {
 	position: absolute;
-	background: #777;
+	background: var(--border);
 	width: 3px;
 	height: 100%;
 	pointer-events: none;

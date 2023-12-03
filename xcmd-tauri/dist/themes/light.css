@@ -1,0 +1,9 @@
+:root {
+	--foreground: #333;
+	--background: #eee;
+	--border: #ccc;
+	--outline: #000;
+	--input-foreground: #000;
+	--input-background: #fff;
+	--input-border: #06b;
+}
