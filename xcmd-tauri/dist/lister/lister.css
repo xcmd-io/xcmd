@@ -1,0 +1,24 @@
+html {
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	font-size: small;
+}
+
+body {
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+	padding-top: 3px;
+	color: var(--foreground);
+	background: var(--background);
+	box-sizing: border-box;
+	cursor: default;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+#container {
+    width: 100%;
+    height: 100%;
+}

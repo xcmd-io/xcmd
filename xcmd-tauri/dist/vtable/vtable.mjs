@@ -7,7 +7,7 @@ document.adoptedStyleSheets.push(stylesheet);
  * @template TItem
  * @typedef DataSource
  * @prop {() => Promise<number>} getLength
- * @prop {(index: number) => Promise<TItem>} getItem
+ * @prop {(index: number) => Promise<TItem | undefined>} getItem
  */
 
 /**
@@ -33,7 +33,8 @@ export class GeneratedDataSource {
 }
 
 /**
- * @implements DataSource<null>
+ * @template TItem
+ * @implements DataSource<TItem>
  */
 export class EmptyDataSource {
 	static INSTANCE = new EmptyDataSource();
@@ -47,10 +48,10 @@ export class EmptyDataSource {
 
 	/**
 	 * @param {number} _index
-	 * @returns {Promise<null>}
+	 * @returns {Promise<TItem | undefined>}
 	 */
 	async getItem(_index) {
-		return null;
+		return undefined;
 	}
 }
 
@@ -164,6 +165,25 @@ export class RemoteDataSource {
 			|| compareString(a.extension, b.extension)
 			|| compareString(a.key, b.key));
 		return result;
+	}
+
+	/**
+	 * @param {ReadRequest} request
+	 * @returns {Promise<ArrayBuffer>}
+	 */
+	async read(request) {
+		const { token } = this.config;
+		const response = await fetch(this.baseUri(), {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
+			},
+			body: JSON.stringify({
+				read: request,
+			}),
+		});
+		return await response.arrayBuffer();
 	}
 
 	/**
@@ -295,6 +315,9 @@ function error(message) {
 	throw new Error(message);
 }
 
+/**
+ * @template TItem
+ */
 export class VTable {
 	/** @type {HTMLTableSectionElement} */
 	tBody;
@@ -305,7 +328,7 @@ export class VTable {
 	/** @type {number} */
 	rowHeight;
 
-	/** @type {DataSource<any>} */
+	/** @type {DataSource<TItem>} */
 	dataSource;
 
 	/** @type {number} */
@@ -315,7 +338,7 @@ export class VTable {
 	 * Constructor.
 	 *
 	 * @param {HTMLTableElement | null} element
-	 * @param {RemoteDataSource | EmptyDataSource} dataSource
+	 * @param {DataSource<TItem>} dataSource
 	 */
 	constructor(element, dataSource = EmptyDataSource.INSTANCE) {
 		const table = element ?? error('virtual table element not found');
@@ -496,8 +519,8 @@ export class VTable {
 
 		for (let i = range.start; i < range.end; ++i) {
 			const tBodyRow = /** @type HTMLTableRowElement */ (this.tBodyRowTemplate.cloneNode(true));
-			const item = await dataSource.getItem(i);
-			if (item === null || dataSource !== this.dataSource) {
+			const item = /** @type any */ (await dataSource.getItem(i));
+			if (item === undefined || dataSource !== this.dataSource) {
 				return Range.EMPTY;
 			}
 			for (const slot of tBodyRow.querySelectorAll('*[data-text]')) {
@@ -549,6 +572,14 @@ export class VTable {
 			}
 		}
 		return range;
+	}
+
+	async focus() {
+		this.tBody.focus();
+		return new Promise((resolve) => setTimeout(async () => {
+			await this.focusRowByIndex(this.activeIndex);
+			resolve(this);
+		}, 0));
 	}
 
 	/**

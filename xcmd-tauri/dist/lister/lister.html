@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<script>
+			const { event: evt } = window.__TAURI__;
+			const data = new Promise(function (resolve, reject) {
+				evt.listen('data', e => {
+					resolve(e.payload);
+				});
+			});
+		</script>
+		<link rel="icon" href="../floppy.svg" type="image/svg+xml">
+		<title>Cross Lister</title>
+		<link rel="stylesheet" href="lister.css"/>
+	</head>
+	<body>
+		<div id="container"></div>
+		<script src="../monaco-editor/min/vs/loader.js"></script>
+		<script>
+			require.config({ paths: { vs: '../monaco-editor/min/vs' } });
+			require(['vs/editor/editor.main'], async function () {
+				const container = document.getElementById('container');
+
+				const editor = monaco.editor.create(container, {
+					readOnly: true,
+				});
+				const awaitedData = await data;
+				const model = monaco.editor.createModel(
+					await awaitedData.value,
+					undefined, // language
+					monaco.Uri.file(`file:///${awaitedData.filename}`) // uri
+				);
+				editor.setModel(model);
+				editor.focus();
+			});
+		</script>
+	</body>
+</html>

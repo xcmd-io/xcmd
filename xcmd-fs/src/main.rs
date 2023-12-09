@@ -7,14 +7,14 @@ use std::fs;
 use std::fs::Permissions;
 #[cfg(not(target_os = "windows"))]
 use std::os::unix::fs::PermissionsExt;
-use std::path::{Component, Path};
+use std::path::{Component, Path, PathBuf};
 use std::time::UNIX_EPOCH;
 use tracing::trace;
 use tracing_actix_web::TracingLogger;
 use urlencoding::encode;
 use xcmd_base::{
 	get_port, init_telemetry, post_startup, FileInfo, ListRequest, ListResponse, Middleware,
-	Request, Response,
+	Request, Response, ReadRequest,
 };
 
 #[cfg(target_os = "windows")]
@@ -58,6 +58,10 @@ async fn enact(request: web::Json<Request>) -> Result<HttpResponse, Box<dyn Erro
 			let response = list_files(request)?;
 			let body = serde_json::to_string(&Response::List(response))?;
 			Ok(HttpResponse::Ok().body(body))
+		}
+		Request::Read(request) => {
+			let response = read(request)?;
+			Ok(HttpResponse::Ok().body(response))
 		}
 		_ => Ok(HttpResponse::NotFound().body("".to_string())),
 	}
@@ -121,25 +125,31 @@ async fn main() -> Result<(), Box<dyn Error>> {
 	Ok(())
 }
 
-fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>> {
-	trace!("request = {:?}", &request);
-
-	// vector for result with list of files
-	let mut files = Vec::<FileInfo>::new();
-
+fn get_paths(path: &Option<String>, key: &Option<String>) -> (PathBuf, PathBuf) {
 	// gets the path, for instance `a/b/c`; falls back to `c:/` if not provided
-	let path = if let Some(ref path) = request.path {
+	let path = if let Some(ref path) = path {
 		Path::new(path).to_path_buf()
 	} else {
 		Path::new(DEFAULT_PATH).to_path_buf()
 	};
 
 	// gets the full path; this path concatenated with the optional key, for instance `a/b/c/d`
-	let full_path = if let Some(ref key) = request.key {
+	let full_path = if let Some(ref key) = key {
 		path.join(key)
 	} else {
 		path.clone()
 	};
+
+	(path, full_path)
+}
+
+fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>> {
+	trace!("request = {:?}", &request);
+
+	// vector for result with list of files
+	let mut files = Vec::<FileInfo>::new();
+
+	let (path, full_path) = get_paths(&request.path, &request.key);
 
 	let full_path_canonicalized = fs::canonicalize(full_path)?;
 	let full_path_str = full_path_canonicalized.to_string_lossy();
@@ -188,6 +198,17 @@ fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>> {
 	let response = ListResponse { path, name, files };
 	// trace!("response = {:?}", &response);
 	Ok(response)
+}
+
+fn read(request: ReadRequest) -> Result<Vec<u8>, Box<dyn Error>> {
+	let (_path, full_path) = get_paths(&request.path, &request.key);
+
+	let full_path_canonicalized = fs::canonicalize(full_path)?;
+	let full_path_str = full_path_canonicalized.to_string_lossy();
+	let full_path = Path::new(trim_long_path_prefix(&full_path_str));
+
+	// Ok(full_path.as_os_str().to_string_lossy().as_bytes().to_vec())
+	Ok(std::fs::read(full_path)?)
 }
 
 #[cfg(target_os = "windows")]

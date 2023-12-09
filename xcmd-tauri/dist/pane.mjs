@@ -3,13 +3,19 @@ import { Tabs } from './tabs/tabs.mjs';
 import { RemoteDataSource, VTable } from './vtable/vtable.mjs';
 
 export class Pane {
+	/** @type {Pane} */
+	static activePane;
+
+	/** @type {Pane} */
+	static otherPane;
+
 	/** @type {Tabs} */
 	tabs;
 
 	/** @type {HTMLInputElement | undefined} */
 	address;
 
-	/** @type {VTable} */
+	/** @type {VTable<FileInfo>} */
 	table;
 
 	/** @type {any} */
@@ -19,11 +25,18 @@ export class Pane {
 	 * Constructor.
 	 *
 	 * @param {Element} element Pane element.
-	 * @param {Element} otherPaneElement Other pane element.
 	 */
-	constructor(element, otherPaneElement) {
+	constructor(element) {
 		this.tabs = new Tabs(element.querySelector('.tabs'));
 		this.table = new VTable(element.querySelector('.vtable'));
+
+		element.addEventListener('focusin', (evt) => {
+			if (Pane.activePane !== this) {
+				const activePane = Pane.activePane;
+				Pane.activePane = this;
+				Pane.otherPane = activePane;
+			}
+		});
 
 		const address = element.querySelector('.address');
 		if (address instanceof HTMLInputElement) {
@@ -40,7 +53,7 @@ export class Pane {
 			switch (getKey(evt)) {
 				case Code.Tab:
 					evt.preventDefault();
-					/** @type {HTMLTableElement} */ (otherPaneElement.querySelector('.vtable')).tBodies[0].focus();
+					await Pane.otherPane.focus();
 					return;
 				case Mod.Ctrl | Code.KeyT:
 					evt.preventDefault();
@@ -92,8 +105,15 @@ export class Pane {
 		}
 	}
 
+	async focus() {
+		await this.table.focus();
+	}
+
 	async enterDirectory() {
 		const item = await this.table.dataSource.getItem(this.table.activeIndex);
+		if (!item) {
+			return;
+		}
 		const currentDirectory = this.address?.value;
 		if (item.isDirectory) {
 			const newDataSource = new RemoteDataSource(this.config, {

@@ -9,7 +9,7 @@
 	},
 	"package": {
 		"productName": "xcmd",
-		"version": "0.1.9"
+		"version": "0.1.11"
 	},
 	"tauri": {
 		"allowlist": {
@@ -43,7 +43,7 @@
 				"icons/icon.icns",
 				"icons/icon.ico"
 			],
-			"identifier": "io.xcmd",
+			"identifier": "xcmd",
 			"longDescription": "",
 			"macOS": {
 				"entitlements": null,

@@ -104,7 +104,7 @@ pub enum Request {
 	/// Creates a directory.
 	Create {},
 	/// Reads the entire contents of a file.
-	Read {},
+	Read(ReadRequest),
 	/// Writes data to a file, replacing its entire contents.
 	Write {},
 	/// Copies a file or directory.
@@ -139,6 +139,15 @@ pub struct ListResponse {
 	pub name: String,
 	/// Files in the directory.
 	pub files: Vec<FileInfo>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ReadRequest {
+	/// Directory path.
+	pub path: Option<String>,
+	/// Optional subdirectory key.
+	pub key: Option<String>,
 }
 
 #[derive(Debug, Serialize)]

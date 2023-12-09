@@ -5,6 +5,7 @@ import { Code, getKey } from './keyboard.mjs';
 import { Palette } from './palette/palette.mjs';
 import { Pane } from './pane.mjs';
 import { VSplit } from './vsplit/vsplit.mjs';
+import { RemoteDataSource } from './vtable/vtable.mjs';
 
 const store = new Store('settings.json');
 const theme = await store.get('theme') ?? 'light';
@@ -28,8 +29,10 @@ const rightPaneElement = /** @type {HTMLElement} */ (leftPaneElement.cloneNode(t
 vsplit.appendChild(rightPaneElement);
 
 new VSplit(vsplit);
-const leftPane = new Pane(leftPaneElement, rightPaneElement);
-const rightPane = new Pane(rightPaneElement, leftPaneElement);
+const leftPane = new Pane(leftPaneElement);
+const rightPane = new Pane(rightPaneElement);
+Pane.activePane = leftPane;
+Pane.otherPane = rightPane;
 const palette = new Palette(/** @type {HTMLElement} */ (document.getElementById('palette')));
 const commands = [
 	{ name: "Developer: Reload Window", action: () => location.reload() },
@@ -46,12 +49,38 @@ palette.table.onKeyDown = /** @type {(evt: KeyboardEvent) => Promise<void>} */ (
 
 palette.setData(commands, item => item.name);
 
-document.body.addEventListener('keydown', e => {
+document.body.addEventListener('keydown', async e => {
 	if (e.defaultPrevented) {
 		return;
 	}
 	switch (getKey(e)) {
 		case Code.F3:
+			e.preventDefault();
+			const pane = Pane.activePane;
+			const table = pane.table;
+			const item = await table.dataSource.getItem(table.activeIndex);
+			console.log('F3', item?.key);
+			if (item !== undefined && !item.isDirectory && table.dataSource instanceof RemoteDataSource) {
+				const buffer = await table.dataSource.read({
+					path: pane.address?.value,
+					key: item.key,
+				});
+				const string = new TextDecoder().decode(buffer);
+				// const lister = open('lister/lister.html'); // alert(string)
+				const { window: win } = window.__TAURI__;
+				const webview = new win.WebviewWindow('lister', {
+					title: 'Cross Lister',
+					url: 'lister/lister.html',
+					focus: true,
+					visible: false,
+				});
+				webview.once('tauri://created', async e => {
+					setTimeout(async () => {
+						await webview.emit('data', { value: string, filename: item.key });
+					}, 200);
+				});
+			}
+			return false;
 		case Code.F4:
 		case Code.F5:
 		case Code.F6:

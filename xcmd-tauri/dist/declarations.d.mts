@@ -96,3 +96,15 @@ declare interface ListResponse {
 		files: FileInfo[];
 	}
 }
+
+declare interface ReadRequest {
+	/**
+	 * Directory path.
+	 */
+	path?: string;
+
+	/**
+	 * Optional subdirectory key.
+	 */
+	key?: string;
+}
