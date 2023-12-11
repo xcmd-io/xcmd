@@ -25,6 +25,8 @@ if (theme) {
 
 document.adoptedStyleSheets.push(stylesheet);
 
+document.body.className = '';
+
 const vsplit = /** @type {HTMLElement} */ (document.getElementById('vsplit'));
 const leftPaneElement = /** @type {HTMLElement} */ (vsplit.firstElementChild);
 const rightPaneElement = /** @type {HTMLElement} */ (leftPaneElement.cloneNode(true));
