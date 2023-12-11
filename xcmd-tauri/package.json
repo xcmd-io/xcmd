@@ -6,6 +6,7 @@
 	"dependencies": {
 		"@tauri-apps/api": "^1.5.0",
 		"tauri-plugin-store-api": "github:tauri-apps/tauri-plugin-store#v1",
+		"tauri-plugin-store-sql": "github:tauri-apps/tauri-plugin-sql#v1",
 		"monaco-editor": "^0.45.0"
 	},
 	"devDependencies": {

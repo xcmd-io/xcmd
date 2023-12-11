@@ -1,4 +1,6 @@
 import { Store } from './modules/tauri-plugin-store-api.mjs';
+import Database from './modules/tauri-plugin-store-sql.mjs';
+
 import stylesheet from './index.css' assert { type: 'css' };
 import defaultThemeStylesheet from './themes/light.css' assert { type: 'css' };
 import { Code, getKey } from './keyboard.mjs';

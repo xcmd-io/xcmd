@@ -177,4 +177,3 @@ class Store {
 }
 
 export { Store };
-//# sourceMappingURL=index.mjs.map
