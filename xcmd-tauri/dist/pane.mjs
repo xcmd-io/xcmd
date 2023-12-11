@@ -9,6 +9,12 @@ export class Pane {
 	/** @type {Pane} */
 	static otherPane;
 
+	/** @type {Pane} */
+	static leftPane;
+
+	/** @type {Pane} */
+	static rightPane;
+
 	/** @type {Tabs} */
 	tabs;
 
@@ -25,10 +31,19 @@ export class Pane {
 	 * Constructor.
 	 *
 	 * @param {Element} element Pane element.
+	 * @param {boolean} primary Indicates whether the pane is a primary (left) pane.
 	 */
-	constructor(element) {
+	constructor(element, primary) {
 		this.tabs = new Tabs(element.querySelector('.tabs'));
 		this.table = new VTable(element.querySelector('.vtable'));
+
+		if (primary) {
+			Pane.leftPane = this;
+			Pane.activePane = this;
+		} else {
+			Pane.rightPane = this;
+			Pane.otherPane = this;
+		}
 
 		element.addEventListener('focusin', (evt) => {
 			if (Pane.activePane !== this) {

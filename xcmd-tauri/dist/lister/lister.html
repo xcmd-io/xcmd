@@ -22,18 +22,41 @@
 			require.config({ paths: { vs: '../monaco-editor/min/vs' } });
 			require(['vs/editor/editor.main'], async function () {
 				const container = document.getElementById('container');
-
-				const editor = monaco.editor.create(container, {
-					readOnly: true,
-				});
 				const awaitedData = await data;
-				const model = monaco.editor.createModel(
-					await awaitedData.value,
-					undefined, // language
-					monaco.Uri.file(`file:///${awaitedData.filename}`) // uri
-				);
-				editor.setModel(model);
-				editor.focus();
+
+				if (awaitedData.mode === 'diff') {
+					const diffEditor = monaco.editor.createDiffEditor(container, {
+						readOnly: true,
+						originalEditable: false,
+						automaticLayout: true,
+					});
+					const originalModel = monaco.editor.createModel(
+						awaitedData.value,
+						undefined, // language
+						monaco.Uri.file(`file:///original/${awaitedData.filename}`) // uri
+					);
+					const modifiedModel = monaco.editor.createModel(
+						awaitedData.otherValue,
+						undefined, // language
+						monaco.Uri.file(`file:///modified/${awaitedData.otherFilename}`) // uri
+					);
+					diffEditor.setModel({
+						original: originalModel,
+						modified: modifiedModel,
+					});
+					diffEditor.focus();
+				} else {
+					const editor = monaco.editor.create(container, {
+						readOnly: true,
+					});
+					const model = monaco.editor.createModel(
+						awaitedData.value,
+						undefined, // language
+						monaco.Uri.file(`file:///${awaitedData.filename}`) // uri
+					);
+					editor.setModel(model);
+					editor.focus();
+				}
 			});
 		</script>
 	</body>

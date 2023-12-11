@@ -9,7 +9,6 @@ body {
 	overflow: hidden;
 	margin: 0;
 	padding: 0;
-	padding-top: 3px;
 	color: var(--foreground);
 	background: var(--background);
 	box-sizing: border-box;
@@ -19,6 +18,6 @@ body {
 }
 
 #container {
-    width: 100%;
-    height: 100%;
+	width: 100%;
+	height: 100%;
 }

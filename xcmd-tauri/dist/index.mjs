@@ -3,7 +3,7 @@ import Database from './modules/tauri-plugin-store-sql.mjs';
 
 import stylesheet from './index.css' assert { type: 'css' };
 import defaultThemeStylesheet from './themes/light.css' assert { type: 'css' };
-import { Code, getKey } from './keyboard.mjs';
+import { Code, Mod, getKey } from './keyboard.mjs';
 import { Palette } from './palette/palette.mjs';
 import { Pane } from './pane.mjs';
 import { VSplit } from './vsplit/vsplit.mjs';
@@ -31,10 +31,8 @@ const rightPaneElement = /** @type {HTMLElement} */ (leftPaneElement.cloneNode(t
 vsplit.appendChild(rightPaneElement);
 
 new VSplit(vsplit);
-const leftPane = new Pane(leftPaneElement);
-const rightPane = new Pane(rightPaneElement);
-Pane.activePane = leftPane;
-Pane.otherPane = rightPane;
+const leftPane = new Pane(leftPaneElement, true);
+const rightPane = new Pane(rightPaneElement, false);
 const palette = new Palette(/** @type {HTMLElement} */ (document.getElementById('palette')));
 const commands = [
 	{ name: "Developer: Reload Window", action: () => location.reload() },
@@ -56,7 +54,7 @@ document.body.addEventListener('keydown', async e => {
 		return;
 	}
 	switch (getKey(e)) {
-		case Code.F3:
+		case Code.F3: {
 			e.preventDefault();
 			const pane = Pane.activePane;
 			const table = pane.table;
@@ -83,6 +81,54 @@ document.body.addEventListener('keydown', async e => {
 				});
 			}
 			return false;
+		}
+		case Mod.Shift | Code.F4: {
+			e.preventDefault();
+			const [leftPane, rightPane] = [Pane.leftPane, Pane.rightPane];
+			const [leftTable, rightTable] = [leftPane.table, rightPane.table];
+			const [leftDataSource, rightDataSource] = [leftTable.dataSource, rightTable.dataSource];
+			const [leftItem, rightItem] = await Promise.all([
+				leftDataSource.getItem(leftTable.activeIndex),
+				rightDataSource.getItem(rightTable.activeIndex),
+			]);
+			console.log('diff', leftItem?.key, rightItem?.key);
+			if (leftItem !== undefined && !leftItem.isDirectory && leftDataSource instanceof RemoteDataSource
+					&& rightItem !== undefined && !rightItem.isDirectory && rightDataSource instanceof RemoteDataSource) {
+				const [leftBuffer, rightBuffer] = await Promise.all([
+					leftDataSource.read({
+						path: leftPane.address?.value,
+						key: leftItem.key,
+					}),
+					rightDataSource.read({
+						path: rightPane.address?.value,
+						key: rightItem.key,
+					}),
+				]);
+				const [leftString, rightString] = [
+					new TextDecoder().decode(leftBuffer),
+					new TextDecoder().decode(rightBuffer),
+				];
+				const { window: win } = window.__TAURI__;
+				const webview = new win.WebviewWindow('lister', {
+					title: 'Cross Lister',
+					url: 'lister/lister.html',
+					focus: true,
+					visible: false,
+				});
+				webview.once('tauri://created', async e => {
+					setTimeout(async () => {
+						await webview.emit('data', {
+							mode: 'diff',
+							value: leftString,
+							filename: leftItem.key,
+							otherValue: rightString,
+							otherFilename: rightItem.key
+						});
+					}, 200);
+				});
+			}
+			return false;
+		}
 		case Code.F4:
 		case Code.F5:
 		case Code.F6:
