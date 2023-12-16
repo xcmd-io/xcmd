@@ -1,6 +1,4 @@
 import { Store } from './modules/tauri-plugin-store-api.mjs';
-import Database from './modules/tauri-plugin-store-sql.mjs';
-
 import stylesheet from './index.css' assert { type: 'css' };
 import defaultThemeStylesheet from './themes/light.css' assert { type: 'css' };
 import { Code, Mod, getKey } from './keyboard.mjs';
@@ -24,8 +22,7 @@ if (theme) {
 }
 
 document.adoptedStyleSheets.push(stylesheet);
-
-document.body.className = '';
+document.body.classList.remove('loading');
 
 const vsplit = /** @type {HTMLElement} */ (document.getElementById('vsplit'));
 const leftPaneElement = /** @type {HTMLElement} */ (vsplit.firstElementChild);
@@ -84,7 +81,7 @@ document.body.addEventListener('keydown', async e => {
 			}
 			return false;
 		}
-		case Mod.Shift | Code.F4: {
+		case Mod.Shift | Code.F3: {
 			e.preventDefault();
 			const [leftPane, rightPane] = [Pane.leftPane, Pane.rightPane];
 			const [leftTable, rightTable] = [leftPane.table, rightPane.table];

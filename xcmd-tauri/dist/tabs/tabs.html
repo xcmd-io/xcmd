@@ -36,7 +36,7 @@
 		<div class="container">
 			<ul class="tabs">
 				<li tabindex="0"><img class="icon" src="../folder.svg"/> xcmd</li>
-				<li tabindex="0" class="selected"><img class="icon" src="../folder.svg"/> work</li>
+				<li tabindex="0" class="selected"><img class="icon" src="../folder.svg"/> work <span class="close">⨯</span></li>
 				<li tabindex="0"><img class="icon" src="../folder.svg"/> Windows</li>
 				<li tabindex="0"><img class="icon" src="../folder.svg"/> Temp</li>
 				<li tabindex="0"><img class="icon" src="../folder.svg"/> Program Files</li>
@@ -51,6 +51,10 @@
 		</div>
 	</body>
 	<script type="module">
+import themeStylesheet from '../themes/light.css' assert { type: 'css' };
+document.adoptedStyleSheets.push(themeStylesheet);
+</script>
+<script type="module">
 import { Tabs } from './tabs.mjs';
 new Tabs(document.querySelector('.tabs'));
 	</script>
