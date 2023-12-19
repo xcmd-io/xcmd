@@ -1,7 +1,7 @@
 import { Code, getKey } from '../keyboard.mjs';
-import stylesheet from './vtable.css' assert { type: 'css' };
+import { appendStyleSheet } from '../stylesheet.mjs';
 
-document.adoptedStyleSheets.push(stylesheet);
+appendStyleSheet('./vtable.css', import.meta.url);
 
 /**
  * @template TItem

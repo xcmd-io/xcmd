@@ -1,27 +1,26 @@
 import { Store } from './modules/tauri-plugin-store-api.mjs';
-import stylesheet from './index.css' assert { type: 'css' };
-import defaultThemeStylesheet from './themes/light.css' assert { type: 'css' };
 import { Code, Mod, getKey } from './keyboard.mjs';
 import { Palette } from './palette/palette.mjs';
 import { Pane } from './pane.mjs';
 import { VSplit } from './vsplit/vsplit.mjs';
 import { RemoteDataSource } from './vtable/vtable.mjs';
+import { appendStyleSheet } from './stylesheet.mjs';
 
 const store = new Store('settings.json');
 const theme = await store.get('theme') ?? 'light';
-document.adoptedStyleSheets.push(defaultThemeStylesheet);
+
+appendStyleSheet('./themes/light.css', import.meta.url);
 
 if (theme) {
 	try {
 		console.log(`loading theme: ${theme}`);
-		const themeStylesheet = await import(`./themes/${theme}.css`, { assert: { type: 'css' } });
-		document.adoptedStyleSheets.push(themeStylesheet.default);
+		appendStyleSheet(`./themes/${theme}.css`, import.meta.url);
 	} catch (e) {
 		console.log(`loading theme failed: ${e}`);
 	}
 }
 
-document.adoptedStyleSheets.push(stylesheet);
+await appendStyleSheet('./index.css', import.meta.url)
 document.body.classList.remove('loading');
 
 const vsplit = /** @type {HTMLElement} */ (document.getElementById('vsplit'));

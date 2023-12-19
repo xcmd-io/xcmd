@@ -138,7 +138,7 @@ export class Pane {
 		if (tab !== undefined) {
 			tab.name = await dataSource.getName();
 			tab.address = await dataSource.getPath();
-			await updateTab(tab.id, tab.name, tab.address, tab.system);
+			await updateTab(tab.id, tab.name, tab.address, tab.system ?? '');
 			this.tabs.updateActiveTab(tab);
 		}
 		if (this.address !== undefined) {

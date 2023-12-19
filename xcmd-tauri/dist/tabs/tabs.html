@@ -51,11 +51,9 @@
 		</div>
 	</body>
 	<script type="module">
-import themeStylesheet from '../themes/light.css' assert { type: 'css' };
-document.adoptedStyleSheets.push(themeStylesheet);
-</script>
-<script type="module">
+import { appendStyleSheet } from '../stylesheet.mjs';
 import { Tabs } from './tabs.mjs';
+appendStyleSheet('../themes/light.css', import.meta.url);
 new Tabs(document.querySelector('.tabs'));
 	</script>
 </html>

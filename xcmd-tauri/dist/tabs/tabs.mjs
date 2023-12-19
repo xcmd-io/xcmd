@@ -1,6 +1,6 @@
-import stylesheet from './tabs.css' assert { type: 'css' };
+import { appendStyleSheet } from '../stylesheet.mjs';
 
-document.adoptedStyleSheets.push(stylesheet);
+appendStyleSheet('./tabs.css', import.meta.url);
 
 /**
  * @param {string} message

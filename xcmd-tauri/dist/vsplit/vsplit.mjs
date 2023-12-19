@@ -1,6 +1,6 @@
-import stylesheet from './vsplit.css' assert { type: 'css' };
+import { appendStyleSheet } from '../stylesheet.mjs';
 
-document.adoptedStyleSheets.push(stylesheet);
+appendStyleSheet('./vsplit.css', import.meta.url);
 
 /**
  * @param {string} message

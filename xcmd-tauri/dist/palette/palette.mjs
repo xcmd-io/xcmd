@@ -1,8 +1,8 @@
 import { Code, Mod, getKey } from '../keyboard.mjs';
+import { appendStyleSheet } from '../stylesheet.mjs';
 import { ArrayDataSource, VTable } from '../vtable/vtable.mjs';
-import stylesheet from './palette.css' assert { type: 'css' };
 
-document.adoptedStyleSheets.push(stylesheet);
+appendStyleSheet('./palette.css', import.meta.url);
 
 /**
  * Normalizes a string for matching.
@@ -122,7 +122,7 @@ export class Palette {
 	entries;
 	/** @type {HTMLInputElement} */
 	input;
-	/** @type {VTable} */
+	/** @type {VTable<any>} */
 	table;
 
 	/**
