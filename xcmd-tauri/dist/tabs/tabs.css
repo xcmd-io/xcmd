@@ -31,6 +31,14 @@ ul.tabs li.selected {
 	border-bottom-color: var(--input-background);
 }
 
+ul.tabs li span.text {
+	display: inline-block;
+	width: 4.75em;
+	vertical-align: bottom;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 ul.tabs li span.close {
 	font-size: 20px;
 	line-height: 15px;
