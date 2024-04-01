@@ -502,7 +502,7 @@ export class VTable {
 				const units = 'KMGTPEZY';
 				const unitSize = 1024;
 				let unitIndex = -1;
-				while (number >= unitSize && unitIndex < units.length) {
+				while (number >= unitSize && unitIndex + 1 < units.length) {
 					number /= unitSize;
 					unitIndex++;
 				}
