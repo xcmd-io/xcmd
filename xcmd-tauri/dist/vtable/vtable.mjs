@@ -488,6 +488,28 @@ export class VTable {
 				}
 				return iconUrl;
 			},
+			size: (item) => {
+				if (item.isDirectory) {
+					return '';
+				}
+				if (typeof item.size !== 'bigint' && isNaN(item.size)) {
+					return '???';
+				}
+				let number = Number(item.size);
+				if (number < 0) {
+					return '???';
+				}
+				const units = 'KMGTPEZY';
+				const unitSize = 1024;
+				let unitIndex = -1;
+				while (number >= unitSize && unitIndex < units.length) {
+					number /= unitSize;
+					unitIndex++;
+				}
+				return unitIndex >= 0
+					? `${number.toFixed(2)} ${units[unitIndex]}iB`
+					: `${number.toString()} B`;
+			},
 			date: (item) => {
 				const date = new Date(item.date);
 				if (isNaN(date.getTime())) {
