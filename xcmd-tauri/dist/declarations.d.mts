@@ -97,6 +97,32 @@ declare interface ListResponse {
 	}
 }
 
+declare interface CreateRequest {
+	/**
+	 * Directory path.
+	 */
+	path?: string;
+
+	/**
+	 * Optional subdirectory name.
+	 */
+	name?: string;
+}
+
+declare interface CreateResponse {
+	create: {
+		/**
+		 * Directory path.
+		 */
+		path: string;
+
+		/**
+		 * Created directory.
+		 */
+		directory?: FileInfo;
+	}
+}
+
 declare interface ReadRequest {
 	/**
 	 * Directory path.

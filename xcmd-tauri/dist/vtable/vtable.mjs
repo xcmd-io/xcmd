@@ -168,6 +168,25 @@ export class RemoteDataSource {
 	}
 
 	/**
+	 * @param {CreateRequest} request
+	 * @returns {Promise<CreateResponse>}
+	 */
+	async createDirectory(request) {
+		const { token } = this.config;
+		const response = await fetch(this.baseUri(), {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
+			},
+			body: JSON.stringify({
+				create: request,
+			}),
+		});
+		return /** @type {CreateResponse} */ (await response.json());
+	}
+
+	/**
 	 * @param {ReadRequest} request
 	 * @returns {Promise<ArrayBuffer>}
 	 */

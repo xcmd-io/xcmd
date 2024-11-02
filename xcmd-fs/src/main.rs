@@ -3,8 +3,8 @@ use actix_web::{get, post, web, App, HttpResponse, HttpServer};
 use rust_embed::RustEmbed;
 use serde::Deserialize;
 use std::error::Error;
-use std::fs;
 use std::fs::Permissions;
+use std::fs::{self, create_dir_all};
 #[cfg(not(target_os = "windows"))]
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Component, Path, PathBuf};
@@ -13,8 +13,8 @@ use tracing::trace;
 use tracing_actix_web::TracingLogger;
 use urlencoding::encode;
 use xcmd_base::{
-	get_port, init_telemetry, post_startup, FileInfo, ListRequest, ListResponse, Middleware,
-	Request, Response, ReadRequest,
+	get_port, init_telemetry, post_startup, CreateRequest, CreateResponse, FileInfo, ListRequest,
+	ListResponse, Middleware, ReadRequest, Request, Response,
 };
 
 #[cfg(target_os = "windows")]
@@ -57,6 +57,11 @@ async fn enact(request: web::Json<Request>) -> Result<HttpResponse, Box<dyn Erro
 		Request::List(request) => {
 			let response = list_files(request)?;
 			let body = serde_json::to_string(&Response::List(response))?;
+			Ok(HttpResponse::Ok().body(body))
+		}
+		Request::Create(request) => {
+			let response = create_directory(request)?;
+			let body = serde_json::to_string(&Response::Create(response))?;
 			Ok(HttpResponse::Ok().body(body))
 		}
 		Request::Read(request) => {
@@ -196,6 +201,27 @@ fn list_files(request: ListRequest) -> Result<ListResponse, Box<dyn Error>> {
 	let path = trim_long_path_prefix(&fs::canonicalize(full_path)?.to_string_lossy()).to_string();
 
 	let response = ListResponse { path, name, files };
+	// trace!("response = {:?}", &response);
+	Ok(response)
+}
+
+fn create_directory(request: CreateRequest) -> Result<CreateResponse, Box<dyn Error>> {
+	trace!("request = {:?}", &request);
+
+	// gets the path, for instance `a/b/c`; falls back to `c:/` if not provided
+	let (dir_path, file_path) = get_paths(&request.path, &request.name);
+	create_dir_all(&file_path)?;
+
+	let directory = get_local_file(dir_path.as_path(), request.name, &None);
+	let path = file_path
+		.file_name()
+		.map(|x| x.to_string_lossy().to_string())
+		.unwrap_or_else(|| String::from(""));
+
+	let response = CreateResponse {
+		path,
+		directory: Some(directory),
+	};
 	// trace!("response = {:?}", &response);
 	Ok(response)
 }

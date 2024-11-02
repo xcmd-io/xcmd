@@ -102,7 +102,7 @@ pub enum Request {
 	/// Gets the entry with a given key in a directory.
 	Join { path: String, key: String },
 	/// Creates a directory.
-	Create {},
+	Create(CreateRequest),
 	/// Reads the entire contents of a file.
 	Read(ReadRequest),
 	/// Writes data to a file, replacing its entire contents.
@@ -119,6 +119,7 @@ pub enum Request {
 #[serde(rename_all = "camelCase")]
 pub enum Response {
 	List(ListResponse),
+	Create(CreateResponse),
 }
 
 #[derive(Debug, Deserialize)]
@@ -139,6 +140,24 @@ pub struct ListResponse {
 	pub name: String,
 	/// Files in the directory.
 	pub files: Vec<FileInfo>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateRequest {
+	/// Directory path.
+	pub path: Option<String>,
+	/// Optional subdirectory name.
+	pub name: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateResponse {
+	/// Directory path.
+	pub path: String,
+	/// Created directory.
+	pub directory: Option<FileInfo>,
 }
 
 #[derive(Debug, Deserialize)]

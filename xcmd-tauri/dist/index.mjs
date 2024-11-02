@@ -127,10 +127,24 @@ document.body.addEventListener('keydown', async e => {
 			}
 			return false;
 		}
+		case Code.F7: {
+			console.log('F7');
+			e.preventDefault();
+			const pane = Pane.activePane;
+			const table = pane.table;
+
+			if (table.dataSource instanceof RemoteDataSource) {
+				await table.dataSource.createDirectory({
+					path: pane.address?.value,
+					name: prompt('name') ?? '',
+				});
+			}
+			const item = await table.dataSource.getItem(table.activeIndex);
+			return false;
+		}
 		case Code.F4:
 		case Code.F5:
 		case Code.F6:
-		case Code.F7:
 		case Code.F8:
 		case Code.F9:
 			e.preventDefault();
