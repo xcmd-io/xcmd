@@ -13,7 +13,7 @@ readme = "README.md"
 
 [target.'cfg(target_os="linux")'.dependencies]
 gio-sys = "0.15"
-glib = "0.15"
+glib = "0.20"
 glib-sys = "0.15"
 gtk-sys = "0.15"
 gtk = "0.15"
